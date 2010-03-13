@@ -14,6 +14,23 @@
 // GNU General Public License for more details.
 
 @interface RootViewController : UITableViewController {
+  NSMutableArray *_servicesLocoNetArray;
+  NSNetServiceBrowser *_serviceLocoNetBrowser;
+
+  IBOutlet UITableView *layoutTableView;
 }
+
+@property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
+
+- (void) netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser;
+- (void) netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser;
+- (void) netServiceBrowser:(NSNetServiceBrowser *)browser
+              didNotSearch:(NSDictionary *)errorDict;
+- (void) netServiceBrowser:(NSNetServiceBrowser *)browser
+            didFindService:(NSNetService *)aNetService
+                moreComing:(BOOL) moreComing;
+- (void) netServiceBrowser:(NSNetServiceBrowser *)browser
+          didRemoveService:(NSNetService *)aNetService
+                moreComing:(BOOL) moreComing;
 
 @end

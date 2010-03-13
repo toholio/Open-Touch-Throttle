@@ -15,17 +15,22 @@
 
 #import "RootViewController.h"
 
-
 @implementation RootViewController
 
-/*
+@synthesize layoutTableView;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
+    _servicesLocoNetArray = [[NSMutableArray alloc] init];
+
+    _serviceLocoNetBrowser = [[NSNetServiceBrowser alloc] init];
+    [_serviceLocoNetBrowser setDelegate:self];
+    [_serviceLocoNetBrowser searchForServicesOfType:@"_loconetovertcpserver._tcp" inDomain:@"local."];
 }
-*/
 
 /*
 - (void)viewWillAppear:(BOOL)animated {
@@ -68,6 +73,50 @@
 	// e.g. self.myOutlet = nil;
 }
 
+#pragma mark Net Service Browser methods
+/*
+- (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser
+{
+}
+*/
+
+/*
+- (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser
+{
+}
+*/
+
+- (void)netServiceBrowser:(NSNetServiceBrowser *)browse
+             didNotSearch:(NSDictionary *)errorDict
+{
+    UIAlertView *failedAlert = [[UIAlertView alloc] initWithTitle:@"Layout Detection Failed"
+                                                          message:@"A network error occured while looking for layouts."
+                                                         delegate:self
+                                                cancelButtonTitle:@""
+                                                otherButtonTitles:@"Dismiss", nil];
+    [failedAlert show];
+    [failedAlert release];
+}
+
+- (void)netServiceBrowser:(NSNetServiceBrowser *)browser
+           didFindService:(NSNetService *)aNetService
+               moreComing:(BOOL)moreComing
+{
+    [_servicesLocoNetArray addObject:aNetService];
+    if ( !moreComing ) {
+        [layoutTableView reloadData];
+    }
+}
+
+- (void)netServiceBrowser:(NSNetServiceBrowser *)browser
+         didRemoveService:(NSNetService *)aNetService
+               moreComing:(BOOL)moreComing
+{
+    [_servicesLocoNetArray removeObject:aNetService];
+    if ( !moreComing ) {
+        [layoutTableView reloadData];
+    }
+}
 
 #pragma mark Table view methods
 
@@ -78,7 +127,11 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
+    if ( section == 0 ) {
+        return [_servicesLocoNetArray count];
+    } else {
+        return 0;
+    }
 }
 
 
@@ -89,27 +142,27 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
     
 	// Configure the cell.
+    if ( indexPath.section == 0 ) {
+        cell.textLabel.text = [[_servicesLocoNetArray objectAtIndex:indexPath.row] name];
+    }
 
     return cell;
 }
 
-
-
-/*
 // Override to support row selection in the table view.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    NSLog( @"Selected a layout..." );
 
     // Navigation logic may go here -- for example, create and push another view controller.
 	// AnotherViewController *anotherViewController = [[AnotherViewController alloc] initWithNibName:@"AnotherView" bundle:nil];
 	// [self.navigationController pushViewController:anotherViewController animated:YES];
 	// [anotherViewController release];
 }
-*/
-
 
 /*
 // Override to support conditional editing of the table view.
@@ -152,6 +205,8 @@
 
 
 - (void)dealloc {
+    [_servicesLocoNetArray release];
+    [_serviceLocoNetBrowser release];
     [super dealloc];
 }
 
