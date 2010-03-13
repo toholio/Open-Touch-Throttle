@@ -17,13 +17,13 @@
 
 @implementation AdapterLoconetOverTCP
 
-@synthesize _loconetOverTCPService;
+@synthesize loconetOverTCPService = _loconetOverTCPService;
 
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
-    self._loconetOverTCPService = service;
-    [self._loconetOverTCPService setDelegate:self];
+    self.loconetOverTCPService = service;
+    [self.loconetOverTCPService setDelegate:self];
 
-    [self._loconetOverTCPService resolveWithTimeout:5.0];
+    [self.loconetOverTCPService resolveWithTimeout:5.0];
 }
 
 - (void)dealloc {
@@ -49,7 +49,7 @@
 
 - (void)netServiceDidResolveAddress:(NSNetService *)netService {
     // Open the socket streams.
-    [self._loconetOverTCPService getInputStream:&_istream outputStream:&_ostream];
+    [self.loconetOverTCPService getInputStream:&_istream outputStream:&_ostream];
 
     if ( !_istream || !_ostream ) {
         UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"

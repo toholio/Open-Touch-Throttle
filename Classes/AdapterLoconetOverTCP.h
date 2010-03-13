@@ -22,7 +22,7 @@
     NSOutputStream *_ostream;
 }
 
-@property (nonatomic, retain) NSNetService *_loconetOverTCPService;
+@property (nonatomic, retain) NSNetService *loconetOverTCPService;
 
 - (id) initWithLocoNetOverTCPService:(NSNetService *)service;
 
