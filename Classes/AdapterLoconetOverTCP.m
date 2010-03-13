@@ -20,10 +20,16 @@
 @synthesize loconetOverTCPService = _loconetOverTCPService;
 
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
-    self.loconetOverTCPService = service;
-    [self.loconetOverTCPService setDelegate:self];
+    self = [super init];
+    if ( self ) {
+        self.loconetOverTCPService = service;
+        [self.loconetOverTCPService setDelegate:self];
 
-    [self.loconetOverTCPService resolveWithTimeout:5.0];
+        [self.loconetOverTCPService resolveWithTimeout:5.0];
+
+        [self addObserver:self forKeyPath:@"trackPower" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:nil];
+    }
+    return self;
 }
 
 - (void)dealloc {
