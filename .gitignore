@@ -1,0 +1,8 @@
+# Xcode byproducts
+build/*
+*.pbxuser
+*.mode1v3
+
+# MacOSX byproducts
+.DS_Store
+profile
