@@ -1,0 +1,7 @@
+This project aims to create an open source throttle for commanding model railways from iPhones, iPod Touches, and iPads.
+
+The initial aim is for simple speed, direction, and function control.
+
+As a starting point, the supported connection with a layout must be a LocoNet Over TCP server such as can be provided by running JMRI and published via ZeroConf as a "_loconetovertcpserver._tcp.local." service.
+
+This project and all contributions are licensed under the GNU General Public License version 3 or later.
