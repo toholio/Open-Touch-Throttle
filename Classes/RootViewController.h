@@ -22,8 +22,6 @@
 
 @property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
 
-- (void) netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser;
-- (void) netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser;
 - (void) netServiceBrowser:(NSNetServiceBrowser *)browser
               didNotSearch:(NSDictionary *)errorDict;
 - (void) netServiceBrowser:(NSNetServiceBrowser *)browser
