@@ -23,6 +23,7 @@
 @synthesize outwardBuffer = _outwardBuffer;
 @synthesize inwardBuffer = _inwardBuffer;
 @synthesize layoutInfo = _layoutInfo;
+@synthesize fatalError = _fatalError;
 
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
     self = [super init];
@@ -49,12 +50,14 @@
     [_loconetOverTCPService release];
 
     if ( _istream ) {
+        [_istream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [_istream setDelegate:nil];
         [_istream close];
         [_istream release];
     }
 
     if ( _ostream ) {
+        [_ostream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [_ostream setDelegate:nil];
         [_ostream close];
         [_ostream release];
@@ -125,17 +128,14 @@
                 [self readBytes];
                 break;
 
-            case NSStreamEventEndEncountered:
-                break;
-
-            case NSStreamEventErrorOccurred:
-                break;
-
             case NSStreamEventOpenCompleted:
+                // Should set an observable property so the user may be informed.
                 break;
 
+            case NSStreamEventEndEncountered:
+            case NSStreamEventErrorOccurred:
             default:
-                NSLog( @"Unknown stream event in Loconet service handler." );
+                self.fatalError = YES;
                 break;
         }
 
@@ -146,17 +146,14 @@
                 [self writeBytes];
                 break;
 
-            case NSStreamEventErrorOccurred:
-                break;
-
             case NSStreamEventOpenCompleted:
+                // Should set an observable property so the user may be informed.
                 break;
 
+            case NSStreamEventErrorOccurred:
             case NSStreamEventEndEncountered:
-                break;
-
             default:
-                NSLog( @"Unknown stream event in Loconet service handler." );
+                self.fatalError = YES;
                 break;
         }
 

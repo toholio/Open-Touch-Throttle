@@ -31,6 +31,9 @@
     // This is needed so we can ignore changes to the trackPower property that were caused by
     // a loconet packet from another LocoNet client.
     BOOL _lastObservedTrackState;
+
+    // Indicates whether a fatal error, such as the connection closing, has occured.
+    BOOL _fatalError;
 }
 
 @property (nonatomic, retain) NSNetService *loconetOverTCPService;
@@ -38,6 +41,7 @@
 @property (nonatomic, retain) NSMutableString *outwardBuffer;
 @property (nonatomic, retain) NSMutableString *inwardBuffer;
 @property (nonatomic, retain) NSString *layoutInfo;
+@property (nonatomic, assign) BOOL fatalError;
 
 - (id) initWithLocoNetOverTCPService:(NSNetService *)service;
 
