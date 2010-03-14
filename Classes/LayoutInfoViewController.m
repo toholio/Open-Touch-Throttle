@@ -107,6 +107,9 @@
 
 - (void)dealloc {
     if ( _layoutAdapter ) {
+        [_layoutAdapter removeObserver:self forKeyPath:@"trackPower"];
+        [_layoutAdapter removeObserver:self forKeyPath:@"layoutInfo"];
+        [_layoutAdapter removeObserver:self forKeyPath:@"loconetOverTCPService"];
         [_layoutAdapter release];
     }
 
