@@ -20,9 +20,16 @@
 
     NSInputStream *_istream;
     NSOutputStream *_ostream;
+    NSMutableString *_outwardBuffer;
+    BOOL _canWrite;
+
+    // Layout state.
+    BOOL _trackPower;
 }
 
 @property (nonatomic, retain) NSNetService *loconetOverTCPService;
+@property (nonatomic, assign) BOOL trackPower;
+@property (nonatomic, retain) NSMutableString *outwardBuffer;
 
 - (id) initWithLocoNetOverTCPService:(NSNetService *)service;
 
@@ -32,5 +39,8 @@
 - (void) stream:(NSStream *)theStream handleEvent:(NSStreamEvent) streamEvent;
 - (void) readBytes;
 - (void) writeBytes;
+- (void) sendLocoNet:(NSString *)command;
+
+- (void) sendTrackPower;
 
 @end

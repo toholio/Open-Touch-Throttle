@@ -18,10 +18,15 @@
 @implementation AdapterLoconetOverTCP
 
 @synthesize loconetOverTCPService = _loconetOverTCPService;
+@synthesize trackPower = _trackPower;
+@synthesize outwardBuffer = _outwardBuffer;
 
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
     self = [super init];
     if ( self ) {
+        self.outwardBuffer = [[NSMutableString alloc] init];
+        _canWrite = NO;
+
         self.loconetOverTCPService = service;
         [self.loconetOverTCPService setDelegate:self];
 
@@ -48,7 +53,18 @@
         [_ostream release];
     }
 
+    [_outwardBuffer release];
+
     [super dealloc];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ( [keyPath isEqualToString:@"trackPower"] ) {
+        if ( [[change objectForKey:NSKeyValueChangeNewKey] boolValue] != [[change objectForKey:NSKeyValueChangeOldKey] boolValue] ) {
+            [self sendTrackPower];
+        }
+    }
 }
 
 #pragma mark Net Services methods
@@ -114,6 +130,7 @@
     } else if ( theStream == _ostream ) {
         switch ( streamEvent ) {
             case NSStreamEventHasSpaceAvailable:
+                _canWrite = YES;
                 [self writeBytes];
                 break;
 
@@ -141,7 +158,39 @@
 }
 
 - (void) writeBytes {
-    NSLog( @"Loconet bytes outward." );
+    if ( _canWrite && [self.outwardBuffer length] ) {
+        _canWrite = NO;
+
+        // Make a set of data from the string.
+        NSData *buffer = [self.outwardBuffer dataUsingEncoding:NSASCIIStringEncoding];
+        int bytesWritten = [_ostream write:[buffer bytes] maxLength:[buffer length]];
+
+        if ( bytesWritten > 0 ) {
+            NSData *remainingData = [NSData dataWithBytes:([buffer bytes] + bytesWritten) length:([buffer length] - bytesWritten)];
+            NSString *remainingString = [[NSString alloc] initWithData:remainingData encoding:NSASCIIStringEncoding];
+            [self.outwardBuffer setString:remainingString];
+            [remainingString autorelease];
+        }
+    }
+}
+
+#pragma mark Layout Methods.
+
+- (void) sendLocoNet:(NSString *)command {
+    [self.outwardBuffer appendString:command];
+    [self.outwardBuffer appendString:@"\n"];
+
+    if ( _canWrite ) {
+        [self writeBytes];
+    }
+}
+
+- (void) sendTrackPower {
+    if ( self.trackPower ) {
+        [self sendLocoNet:@"SEND 83 7C"];
+    } else {
+        [self sendLocoNet:@"SEND 82 7D"];
+    }
 }
 
 @end
