@@ -39,8 +39,6 @@
         [self.loconetOverTCPService setDelegate:self];
 
         [self.loconetOverTCPService resolveWithTimeout:5.0];
-
-        [self addObserver:self forKeyPath:@"trackPower" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:nil];
     }
     return self;
 }
@@ -69,17 +67,6 @@
     [_layoutInfo release];
 
     [super dealloc];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ( [keyPath isEqualToString:@"trackPower"] ) {
-        if ( [[change objectForKey:NSKeyValueChangeNewKey] boolValue] != [[change objectForKey:NSKeyValueChangeOldKey] boolValue] &&
-             [[change objectForKey:NSKeyValueChangeNewKey] boolValue] != _lastObservedTrackState )
-        {
-            [self sendTrackPower];
-        }
-    }
 }
 
 #pragma mark Net Services methods
@@ -395,6 +382,14 @@
         [self sendLocoNet:@"SEND 83 7C"];
     } else {
         [self sendLocoNet:@"SEND 82 7D"];
+    }
+}
+
+- (void) setTrackPower:(BOOL)powerOn {
+    _trackPower = powerOn;
+
+    if ( _trackPower != _lastObservedTrackState ) {
+        [self sendTrackPower];
     }
 }
 
