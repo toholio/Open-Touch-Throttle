@@ -17,10 +17,8 @@
 
 #import "AdapterLoconetOverTCP.h"
 
-@interface LayoutInfoViewController : UIViewController {
-    IBOutlet UISwitch *powerSwitch;
-    IBOutlet UILabel *layoutServiceName;
-    IBOutlet UILabel *layoutInfo;
+@interface LayoutInfoViewController : UITableViewController {
+    UISwitch *powerSwitch;
 
     AdapterLoconetOverTCP *_layoutAdapter;
 }

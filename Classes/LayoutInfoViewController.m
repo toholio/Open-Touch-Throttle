@@ -34,10 +34,6 @@
     _layoutAdapter = theAdapter;
     [_layoutAdapter retain];
 
-    [powerSwitch setOn:self.layoutAdapter.trackPower];
-    layoutInfo.text = self.layoutAdapter.layoutInfo;
-    layoutServiceName.text = [self.layoutAdapter.loconetOverTCPService name];
-
     [_layoutAdapter addObserver:self forKeyPath:@"trackPower" options:0 context:nil];
     [_layoutAdapter addObserver:self forKeyPath:@"layoutInfo" options:0 context:nil];
     [_layoutAdapter addObserver:self forKeyPath:@"loconetOverTCPService" options:0 context:nil];
@@ -50,10 +46,10 @@
             [powerSwitch setOn:self.layoutAdapter.trackPower animated:YES];
 
         } else if ( [keyPath isEqualToString:@"layoutInfo"] ) {
-            layoutInfo.text = self.layoutAdapter.layoutInfo;
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
 
         } else if ( [keyPath isEqualToString:@"loconetOverTCPService"] ) {
-            layoutServiceName.text = [self.layoutAdapter.loconetOverTCPService name];
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
         }
     }
 }
@@ -79,12 +75,6 @@
     [super viewDidLoad];
 
     self.title = @"Layout Details";
-
-    // Make sure this stuff is loaded at least once. The initial layout observations may happen too early
-    // for the UI to ever be updated.
-    [powerSwitch setOn:self.layoutAdapter.trackPower];
-    layoutInfo.text = self.layoutAdapter.layoutInfo;
-    layoutServiceName.text = [self.layoutAdapter.loconetOverTCPService name];
 }
 
 /*
@@ -115,11 +105,68 @@
         [_layoutAdapter release];
     }
 
+    if ( powerSwitch ) {
+        [powerSwitch release];
+    }
+
     [super dealloc];
 }
 
 - (IBAction) powerSwitchChange:(id) sender {
     self.layoutAdapter.trackPower = [powerSwitch isOn];
+}
+
+#pragma mark Table view methods
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 2;
+}
+
+// Customize the number of rows in the table view.
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if ( section == 0 ) {
+        return 2;
+    } else {
+        return 1;
+    }
+}
+
+// Customize the appearance of table view cells.
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    static NSString *CellIdentifier = @"Cell";
+
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+    }
+
+    // Configure the cell.
+    if ( indexPath.section == 0 ) {
+        if ( indexPath.row == 0 ) {
+            cell.textLabel.text = [self.layoutAdapter.loconetOverTCPService name];
+
+        } else if ( indexPath.row == 1 ) {
+            cell.textLabel.text = self.layoutAdapter.layoutInfo;
+        }
+
+    } else if ( indexPath.section == 1 ) {
+        if ( indexPath.row == 0 ) {
+            if ( !powerSwitch ) {
+                powerSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+                [powerSwitch setOn:self.layoutAdapter.trackPower];
+                [powerSwitch addTarget:self action:@selector(powerSwitchChange:) forControlEvents:UIControlEventValueChanged];
+            }
+
+            [cell addSubview:powerSwitch];
+            cell.accessoryView = powerSwitch;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+            cell.textLabel.text = @"Track Power";
+        }
+    }
+
+    return cell;
 }
 
 @end
