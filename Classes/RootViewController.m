@@ -15,6 +15,7 @@
 
 #import "RootViewController.h"
 #import "LayoutInfoViewController.h"
+#import "AddManualLayoutViewController.h"
 
 @implementation RootViewController
 
@@ -24,8 +25,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addManualLayout:)] autorelease];
+
+    self.title = @"Layouts";
 
     _servicesLocoNetArray = [[NSMutableArray alloc] init];
 
@@ -94,6 +97,16 @@
             }
         }
     }
+}
+
+- (void)dealloc {
+    [_servicesLocoNetArray release];
+    [_serviceLocoNetBrowser release];
+    if ( _layoutAdapter ) {
+        [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
+        [_layoutAdapter release];
+    }
+    [super dealloc];
 }
 
 #pragma mark Net Service Browser methods
@@ -197,13 +210,14 @@
     }
 }
 
-/*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+    if ( indexPath.section == 0 ) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
-*/
 
 
 /*
@@ -236,17 +250,16 @@
 }
 */
 
+#pragma mark Manual layout methods.
 
-- (void)dealloc {
-    [_servicesLocoNetArray release];
-    [_serviceLocoNetBrowser release];
-    if ( _layoutAdapter ) {
-        [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
-        [_layoutAdapter release];
-    }
-    [super dealloc];
+- (IBAction) addManualLayout:(id) sender {
+    AddManualLayoutViewController *addManualLayoutViewController = [[AddManualLayoutViewController alloc] initWithNibName:@"AddManualLayoutView" bundle:nil];
+    UINavigationController *modelNavController = [[UINavigationController alloc] initWithRootViewController:addManualLayoutViewController];
+
+    [self.navigationController presentModalViewController:modelNavController animated:YES];
+    [addManualLayoutViewController release];
+    [modelNavController release];
 }
-
 
 @end
 

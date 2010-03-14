@@ -78,11 +78,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.title = @"Layout Details";
+
     // Make sure this stuff is loaded at least once. The initial layout observations may happen too early
     // for the UI to ever be updated.
     [powerSwitch setOn:self.layoutAdapter.trackPower];
     layoutInfo.text = self.layoutAdapter.layoutInfo;
-    layoutServiceName.text = [self.layoutAdapter.loconetOverTCPService name];    
+    layoutServiceName.text = [self.layoutAdapter.loconetOverTCPService name];
 }
 
 /*

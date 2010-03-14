@@ -36,4 +36,6 @@
           didRemoveService:(NSNetService *)aNetService
                 moreComing:(BOOL) moreComing;
 
+- (IBAction) addManualLayout:(id) sender;
+
 @end
