@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 
 #import "AdapterLoconetOverTCP.h"
+#import "LocoNetOpCodes.h"
 
 @implementation AdapterLoconetOverTCP
 
@@ -332,7 +333,32 @@
 }
 
 - (void) processLocoNetTwoByte:(NSData *)theBytes {
-    // To be implemented.
+    assert( [theBytes length] == 2 );
+
+    uint8_t bytes[2];
+    [theBytes getBytes:bytes];
+
+    switch ( bytes[0] ) {
+        case OPC_IDLE:
+            // To be implemented.
+            break;
+
+        case OPC_GPON:
+            self.trackPower = YES;
+            break;
+
+        case OPC_GPOFF:
+            self.trackPower = NO;
+            break;
+
+        case OPC_BUSY:
+            // To be implemented.
+            break;
+
+        default:
+            // Unknown opcode.
+            break;
+    }
 }
 
 - (void) processLocoNetFourByte:(NSData *)theBytes {
