@@ -22,10 +22,12 @@
 @synthesize trackPower = _trackPower;
 @synthesize outwardBuffer = _outwardBuffer;
 @synthesize inwardBuffer = _inwardBuffer;
+@synthesize layoutInfo = _layoutInfo;
 
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
     self = [super init];
     if ( self ) {
+        self.layoutInfo = @"Unknown layout type.";
         _lastObservedTrackState = self.trackPower;
 
         self.inwardBuffer = [[NSMutableString alloc] init];
@@ -60,6 +62,8 @@
 
     [_inwardBuffer release];
     [_outwardBuffer release];
+
+    [_layoutInfo release];
 
     [super dealloc];
 }
@@ -236,6 +240,7 @@
 
     } else if ( [segment isEqualToString:@"VERSION"] ) {
         // Should store this value for display.
+        self.layoutInfo = [parseScanner string];
 
     } else {
         NSLog( @"Got unknown command %@", command );

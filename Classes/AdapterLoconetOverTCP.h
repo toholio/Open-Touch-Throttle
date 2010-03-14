@@ -25,6 +25,7 @@
     BOOL _canWrite;
 
     // Layout state.
+    NSString *_layoutInfo;
     BOOL _trackPower;
 
     // This is needed so we can ignore changes to the trackPower property that were caused by
@@ -36,6 +37,7 @@
 @property (nonatomic, assign) BOOL trackPower;
 @property (nonatomic, retain) NSMutableString *outwardBuffer;
 @property (nonatomic, retain) NSMutableString *inwardBuffer;
+@property (nonatomic, retain) NSString *layoutInfo;
 
 - (id) initWithLocoNetOverTCPService:(NSNetService *)service;
 
