@@ -14,6 +14,8 @@
 // GNU General Public License for more details.
 
 #import "RootViewController.h"
+#import "AdapterLoconetOverTCP.h"
+#import "LayoutInfoViewController.h"
 
 @implementation RootViewController
 
@@ -156,12 +158,19 @@
 // Override to support row selection in the table view.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    NSLog( @"Selected a layout..." );
+    AdapterLoconetOverTCP *adapter;
 
-    // Navigation logic may go here -- for example, create and push another view controller.
-	// AnotherViewController *anotherViewController = [[AnotherViewController alloc] initWithNibName:@"AnotherView" bundle:nil];
-	// [self.navigationController pushViewController:anotherViewController animated:YES];
-	// [anotherViewController release];
+    // Create a layout adapter of the needed type.
+    if ( indexPath.section == 0 ) {
+        adapter = [[AdapterLoconetOverTCP alloc] initWithLocoNetOverTCPService:[_servicesLocoNetArray objectAtIndex:indexPath.row]];
+
+        LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil];
+        layoutInfoViewController.layoutAdapter = adapter;
+        [self.navigationController pushViewController:layoutInfoViewController animated:YES];
+
+        [layoutInfoViewController release];
+        [adapter release];
+    }
 }
 
 /*
