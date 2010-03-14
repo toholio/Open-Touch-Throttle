@@ -14,12 +14,12 @@
 // GNU General Public License for more details.
 
 #import "RootViewController.h"
-#import "AdapterLoconetOverTCP.h"
 #import "LayoutInfoViewController.h"
 
 @implementation RootViewController
 
 @synthesize layoutTableView;
+@synthesize layoutAdapter = _layoutAdapter;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -73,6 +73,27 @@
 - (void)viewDidUnload {
 	// Release anything that can be recreated in viewDidLoad or on demand.
 	// e.g. self.myOutlet = nil;
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ( object == self.layoutAdapter ) {
+        if ( [keyPath isEqualToString:@"fatalError"] ) {
+            if ( self.layoutAdapter.fatalError ) {
+                [self.navigationController popToRootViewControllerAnimated:YES];
+                UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Lost"
+                                                                     message:@"The connection to the layout has been lost."
+                                                                    delegate:nil
+                                                           cancelButtonTitle:@"Dismiss"
+                                                           otherButtonTitles:nil];
+                [errorAlert show];
+                [errorAlert autorelease];
+
+                [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
+                self.layoutAdapter = nil;
+            }
+        }
+    }
 }
 
 #pragma mark Net Service Browser methods
@@ -139,14 +160,14 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     static NSString *CellIdentifier = @"Cell";
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
-    
+
 	// Configure the cell.
     if ( indexPath.section == 0 ) {
         cell.textLabel.text = [[_servicesLocoNetArray objectAtIndex:indexPath.row] name];
@@ -167,6 +188,9 @@
         LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil];
         layoutInfoViewController.layoutAdapter = adapter;
         [self.navigationController pushViewController:layoutInfoViewController animated:YES];
+
+        self.layoutAdapter = adapter;
+        [adapter addObserver:self forKeyPath:@"fatalError" options:0 context:nil];
 
         [layoutInfoViewController release];
         [adapter release];
@@ -216,6 +240,10 @@
 - (void)dealloc {
     [_servicesLocoNetArray release];
     [_serviceLocoNetBrowser release];
+    if ( _layoutAdapter ) {
+        [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
+        [_layoutAdapter release];
+    }
     [super dealloc];
 }
 

@@ -13,14 +13,19 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+#import "AdapterLoconetOverTCP.h"
+
 @interface RootViewController : UITableViewController {
   NSMutableArray *_servicesLocoNetArray;
   NSNetServiceBrowser *_serviceLocoNetBrowser;
 
   IBOutlet UITableView *layoutTableView;
+
+  AdapterLoconetOverTCP *_layoutAdapter;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
+@property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
 
 - (void) netServiceBrowser:(NSNetServiceBrowser *)browser
               didNotSearch:(NSDictionary *)errorDict;
