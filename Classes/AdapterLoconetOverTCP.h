@@ -26,6 +26,10 @@
 
     // Layout state.
     BOOL _trackPower;
+
+    // This is needed so we can ignore changes to the trackPower property that were caused by
+    // a loconet packet from another LocoNet client.
+    BOOL _lastObservedTrackState;
 }
 
 @property (nonatomic, retain) NSNetService *loconetOverTCPService;

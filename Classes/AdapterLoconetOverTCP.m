@@ -26,6 +26,8 @@
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
     self = [super init];
     if ( self ) {
+        _lastObservedTrackState = self.trackPower;
+
         self.inwardBuffer = [[NSMutableString alloc] init];
         self.outwardBuffer = [[NSMutableString alloc] init];
         _canWrite = NO;
@@ -65,7 +67,9 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ( [keyPath isEqualToString:@"trackPower"] ) {
-        if ( [[change objectForKey:NSKeyValueChangeNewKey] boolValue] != [[change objectForKey:NSKeyValueChangeOldKey] boolValue] ) {
+        if ( [[change objectForKey:NSKeyValueChangeNewKey] boolValue] != [[change objectForKey:NSKeyValueChangeOldKey] boolValue] &&
+             [[change objectForKey:NSKeyValueChangeNewKey] boolValue] != _lastObservedTrackState )
+        {
             [self sendTrackPower];
         }
     }
@@ -344,10 +348,12 @@
             break;
 
         case OPC_GPON:
+            _lastObservedTrackState = YES;
             self.trackPower = YES;
             break;
 
         case OPC_GPOFF:
+            _lastObservedTrackState = NO;
             self.trackPower = NO;
             break;
 
