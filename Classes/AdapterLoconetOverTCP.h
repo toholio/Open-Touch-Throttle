@@ -55,6 +55,7 @@
 - (void) sendLocoNet:(NSString *)command;
 
 - (void) sendTrackPower;
+- (void) sendRequestSlotInfo:(unsigned short) slot;
 - (void) parseLocoNetOverTCP:(NSString *)command;
 - (void) processLocoNet:(NSData *)theBytes;
 - (void) processLocoNetTwoByte:(NSData *)theBytes;

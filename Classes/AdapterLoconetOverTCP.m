@@ -93,6 +93,9 @@
 
         [_ostream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [_istream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+        // Since we don't yet know the track power state we should request the master config slot, 0.
+        [self sendRequestSlotInfo:0];
     }
 }
 
@@ -365,7 +368,27 @@
 }
 
 - (void) processLocoNetManyByte:(NSData *)theBytes withLength:(unsigned int)length {
-    // To be implemented.
+    // Most opcodes remain to be implemented.
+
+    uint8_t *bytes = malloc( sizeof(uint8_t) * [theBytes length] );
+    [theBytes getBytes:bytes];
+
+    // Make sure the packet is the size we expect.
+    if ( bytes[1] == [theBytes length] ) {
+        switch ( bytes[0] ) {
+            case OPC_SL_RD_DATA:
+                // We can examine the 5th data byte for track status. For now we only care about track power.
+                _lastObservedTrackState = bytes[7] & 0x01;
+                self.trackPower = _lastObservedTrackState;
+                break;
+
+            default:
+                // To be implemented.
+                break;
+        }
+    }
+
+    free( bytes );
 }
 
 - (void) sendLocoNet:(NSString *)command {
@@ -383,6 +406,17 @@
     } else {
         [self sendLocoNet:@"SEND 82 7D"];
     }
+}
+
+- (void) sendRequestSlotInfo:(unsigned short) slot {
+    uint8_t bytes[4];
+
+    bytes[0] = OPC_RQ_SL_DATA;
+    bytes[1] = slot & 0x7f;
+    bytes[2] = 0;
+    bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
+
+    [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
 }
 
 - (void) setTrackPower:(BOOL)powerOn {
