@@ -340,13 +340,11 @@
             break;
 
         case OPC_GPON:
-            _lastObservedTrackState = YES;
-            self.trackPower = YES;
+            [self setObservedTrackPower:YES];
             break;
 
         case OPC_GPOFF:
-            _lastObservedTrackState = NO;
-            self.trackPower = NO;
+            [self setObservedTrackPower:NO];
             break;
 
         case OPC_BUSY:
@@ -378,8 +376,7 @@
         switch ( bytes[0] ) {
             case OPC_SL_RD_DATA:
                 // We can examine the 5th data byte for track status. For now we only care about track power.
-                _lastObservedTrackState = bytes[7] & 0x01;
-                self.trackPower = _lastObservedTrackState;
+                [self setObservedTrackPower:bytes[7] & 0x01];
                 break;
 
             default:
@@ -425,6 +422,11 @@
     if ( _trackPower != _lastObservedTrackState ) {
         [self sendTrackPower];
     }
+}
+
+- (void) setObservedTrackPower:(BOOL)powerOn {
+    _lastObservedTrackState = powerOn;
+    self.trackPower = powerOn;
 }
 
 @end
