@@ -32,9 +32,7 @@
 
     _servicesLocoNetArray = [[NSMutableArray alloc] init];
 
-    _serviceLocoNetBrowser = [[NSNetServiceBrowser alloc] init];
-    [_serviceLocoNetBrowser setDelegate:self];
-    [_serviceLocoNetBrowser searchForServicesOfType:@"_loconetovertcpserver._tcp" inDomain:@"local."];
+    self.navigationController.delegate = self;
 }
 
 /*
@@ -110,6 +108,13 @@
 }
 
 #pragma mark Net Service Browser methods
+
+- (void) lookForLocoNetOverTCP {
+    _serviceLocoNetBrowser = [[NSNetServiceBrowser alloc] init];
+    [_serviceLocoNetBrowser setDelegate:self];
+    [_serviceLocoNetBrowser searchForServicesOfType:@"_loconetovertcpserver._tcp" inDomain:@"local."];
+}
+
 /*
 - (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser
 {
@@ -140,7 +145,7 @@
 {
     [_servicesLocoNetArray addObject:aNetService];
     if ( !moreComing ) {
-        [layoutTableView reloadData];
+        [layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -150,7 +155,7 @@
 {
     [_servicesLocoNetArray removeObject:aNetService];
     if ( !moreComing ) {
-        [layoutTableView reloadData];
+        [layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -207,6 +212,12 @@
 
         [layoutInfoViewController release];
         [adapter release];
+
+        // Now stop the service browser while the other view is in use.
+        [_serviceLocoNetBrowser stop];
+        [_serviceLocoNetBrowser release];
+        [_servicesLocoNetArray removeAllObjects];
+        [layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -259,6 +270,17 @@
     [self.navigationController presentModalViewController:modelNavController animated:YES];
     [addManualLayoutViewController release];
     [modelNavController release];
+}
+
+#pragma mark Navigation Controller methods.
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if ( navigationController == self.navigationController ) {
+        if ( viewController == self ) {
+            // We must have returned from the layout views. Start looking for layouts again.
+            [self lookForLocoNetOverTCP];
+        }
+    }
 }
 
 @end

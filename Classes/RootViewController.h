@@ -15,7 +15,7 @@
 
 #import "AdapterLoconetOverTCP.h"
 
-@interface RootViewController : UITableViewController {
+@interface RootViewController : UITableViewController <UINavigationControllerDelegate> {
   NSMutableArray *_servicesLocoNetArray;
   NSNetServiceBrowser *_serviceLocoNetBrowser;
 
@@ -26,6 +26,8 @@
 
 @property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
 @property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
+
+- (void) lookForLocoNetOverTCP;
 
 - (void) netServiceBrowser:(NSNetServiceBrowser *)browser
               didNotSearch:(NSDictionary *)errorDict;
