@@ -89,9 +89,6 @@
                                                            otherButtonTitles:nil];
                 [errorAlert show];
                 [errorAlert autorelease];
-
-                [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
-                self.layoutAdapter = nil;
             }
         }
     }
@@ -277,6 +274,10 @@
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if ( navigationController == self.navigationController ) {
         if ( viewController == self ) {
+            // The layout adapter is no longer needed.
+            [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
+            self.layoutAdapter = nil;
+
             // We must have returned from the layout views. Start looking for layouts again.
             [self lookForLocoNetOverTCP];
         }
