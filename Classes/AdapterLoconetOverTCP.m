@@ -95,6 +95,7 @@
     [super dealloc];
 }
 
+#pragma mark -
 #pragma mark Net Services methods
 
 - (void)netServiceDidResolveAddress:(NSNetService *)netService {
@@ -143,6 +144,7 @@
     [errorAlert show];
 }
 
+#pragma mark -
 #pragma mark Stream methods.
 
 - (void) stream:(NSStream *)theStream handleEvent:(NSStreamEvent) streamEvent {
@@ -285,6 +287,7 @@
     }
 }
 
+#pragma mark -
 #pragma mark Layout Methods.
 
 - (void) processLocoNet:(NSData *)theBytes {
