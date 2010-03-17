@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 @interface Open_Touch_ThrottleAppDelegate : NSObject <UIApplicationDelegate> {
-    
+
     UIWindow *window;
     UINavigationController *navigationController;
 }

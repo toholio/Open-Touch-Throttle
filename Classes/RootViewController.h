@@ -17,12 +17,12 @@
 
 @interface RootViewController : UITableViewController <UINavigationControllerDelegate> {
 @private
-  IBOutlet UITableView *_layoutTableView;
+    IBOutlet UITableView *_layoutTableView;
 
-  AdapterLoconetOverTCP *_layoutAdapter;
+    AdapterLoconetOverTCP *_layoutAdapter;
 
-  NSMutableArray *_servicesLocoNetArray;
-  NSNetServiceBrowser *_serviceLocoNetBrowser;
+    NSMutableArray *_servicesLocoNetArray;
+    NSNetServiceBrowser *_serviceLocoNetBrowser;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
