@@ -17,10 +17,21 @@
 #import "LayoutInfoViewController.h"
 #import "AddManualLayoutViewController.h"
 
+@interface RootViewController ()
+
+@property (nonatomic, retain) NSMutableArray *servicesLocoNetArray;
+@property (nonatomic, retain) NSNetServiceBrowser *serviceLocoNetBrowser;
+
+@end
+
 @implementation RootViewController
 
-@synthesize layoutTableView;
+@synthesize layoutTableView = _layoutTableView;
 @synthesize layoutAdapter = _layoutAdapter;
+
+@synthesize servicesLocoNetArray = _servicesLocoNetArray;
+@synthesize serviceLocoNetBrowser = _serviceLocoNetBrowser;
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -30,7 +41,8 @@
 
     self.title = @"Layouts";
 
-    _servicesLocoNetArray = [[NSMutableArray alloc] init];
+    self.servicesLocoNetArray = [[NSMutableArray alloc] init];
+    [self.servicesLocoNetArray release];
 
     self.navigationController.delegate = self;
 }
@@ -67,7 +79,7 @@
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-	
+
 	// Release any cached data, images, etc that aren't in use.
 }
 
@@ -97,19 +109,17 @@
 - (void)dealloc {
     [_servicesLocoNetArray release];
     [_serviceLocoNetBrowser release];
-    if ( _layoutAdapter ) {
-        [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
-        [_layoutAdapter release];
-    }
+    [_layoutAdapter release];
     [super dealloc];
 }
 
 #pragma mark Net Service Browser methods
 
 - (void) lookForLocoNetOverTCP {
-    _serviceLocoNetBrowser = [[NSNetServiceBrowser alloc] init];
-    [_serviceLocoNetBrowser setDelegate:self];
-    [_serviceLocoNetBrowser searchForServicesOfType:@"_loconetovertcpserver._tcp" inDomain:@"local."];
+    self.serviceLocoNetBrowser = [[NSNetServiceBrowser alloc] init];
+    [self.serviceLocoNetBrowser release];
+    [self.serviceLocoNetBrowser setDelegate:self];
+    [self.serviceLocoNetBrowser searchForServicesOfType:@"_loconetovertcpserver._tcp" inDomain:@"local."];
 }
 
 /*
@@ -140,9 +150,9 @@
            didFindService:(NSNetService *)aNetService
                moreComing:(BOOL)moreComing
 {
-    [_servicesLocoNetArray addObject:aNetService];
+    [self.servicesLocoNetArray addObject:aNetService];
     if ( !moreComing ) {
-        [layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+        [self.layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -150,9 +160,9 @@
          didRemoveService:(NSNetService *)aNetService
                moreComing:(BOOL)moreComing
 {
-    [_servicesLocoNetArray removeObject:aNetService];
+    [self.servicesLocoNetArray removeObject:aNetService];
     if ( !moreComing ) {
-        [layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+        [self.layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -166,7 +176,7 @@
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ( section == 0 ) {
-        return [_servicesLocoNetArray count];
+        return [self.servicesLocoNetArray count];
     } else {
         return 0;
     }
@@ -185,7 +195,7 @@
 
 	// Configure the cell.
     if ( indexPath.section == 0 ) {
-        cell.textLabel.text = [[_servicesLocoNetArray objectAtIndex:indexPath.row] name];
+        cell.textLabel.text = [[self.servicesLocoNetArray objectAtIndex:indexPath.row] name];
     }
 
     return cell;
@@ -198,10 +208,9 @@
 
     // Create a layout adapter of the needed type.
     if ( indexPath.section == 0 ) {
-        adapter = [[AdapterLoconetOverTCP alloc] initWithLocoNetOverTCPService:[_servicesLocoNetArray objectAtIndex:indexPath.row]];
+        adapter = [[AdapterLoconetOverTCP alloc] initWithLocoNetOverTCPService:[self.servicesLocoNetArray objectAtIndex:indexPath.row]];
 
-        LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil];
-        layoutInfoViewController.layoutAdapter = adapter;
+        LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil layoutAdapter:adapter];
         [self.navigationController pushViewController:layoutInfoViewController animated:YES];
 
         self.layoutAdapter = adapter;
@@ -211,10 +220,10 @@
         [adapter release];
 
         // Now stop the service browser while the other view is in use.
-        [_serviceLocoNetBrowser stop];
-        [_serviceLocoNetBrowser release];
-        [_servicesLocoNetArray removeAllObjects];
-        [layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+        [self.serviceLocoNetBrowser stop];
+        self.serviceLocoNetBrowser = nil;
+        [self.servicesLocoNetArray removeAllObjects];
+        [self.layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -231,14 +240,14 @@
 /*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
+    }
 }
 */
 

@@ -16,6 +16,7 @@
 #import <Foundation/Foundation.h>
 
 @interface AdapterLoconetOverTCP : NSObject {
+@private
     NSNetService *_loconetOverTCPService;
 
     NSInputStream *_istream;
@@ -28,20 +29,19 @@
     NSString *_layoutInfo;
     BOOL _trackPower;
 
+    // Indicates whether a fatal error, such as the connection closing, has occured.
+    BOOL _fatalError;
+
     // This is needed so we can ignore changes to the trackPower property that were caused by
     // a loconet packet from another LocoNet client.
     BOOL _lastObservedTrackState;
-
-    // Indicates whether a fatal error, such as the connection closing, has occured.
-    BOOL _fatalError;
 }
 
-@property (nonatomic, retain) NSNetService *loconetOverTCPService;
+@property (nonatomic, readonly, retain) NSNetService *loconetOverTCPService;
+
 @property (nonatomic, assign) BOOL trackPower;
-@property (nonatomic, retain) NSMutableString *outwardBuffer;
-@property (nonatomic, retain) NSMutableString *inwardBuffer;
-@property (nonatomic, retain) NSString *layoutInfo;
-@property (nonatomic, assign) BOOL fatalError;
+@property (nonatomic, readonly, retain) NSString *layoutInfo;
+@property (nonatomic, readonly) BOOL fatalError;
 
 - (id) initWithLocoNetOverTCPService:(NSNetService *)service;
 

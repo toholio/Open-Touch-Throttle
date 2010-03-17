@@ -15,35 +15,34 @@
 
 #import "LayoutInfoViewController.h"
 
+// Make the layoutAdapter property readwrite.
+@interface LayoutInfoViewController ()
+
+@property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
+
+@end
+
 @implementation LayoutInfoViewController
 
 @synthesize layoutAdapter = _layoutAdapter;
+@synthesize powerSwitch = _powerSwitch;
 
-- (void) setLayoutAdapter:(AdapterLoconetOverTCP *)theAdapter {
-    // Remove all observations on the previous adapter and dispose of it.
-    if ( _layoutAdapter ) {
-        [_layoutAdapter removeObserver:self forKeyPath:@"trackPower"];
-        [_layoutAdapter removeObserver:self forKeyPath:@"layoutInfo"];
-        [_layoutAdapter removeObserver:self forKeyPath:@"loconetOverTCPService"];
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)adapter {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 
-        [_layoutAdapter release];
-        _layoutAdapter = nil;
+    if ( self ) {
+        self.layoutAdapter = adapter;
     }
 
-    // Assign and start observing the new adapter.
-    _layoutAdapter = theAdapter;
-    [_layoutAdapter retain];
-
-    [_layoutAdapter addObserver:self forKeyPath:@"trackPower" options:0 context:nil];
-    [_layoutAdapter addObserver:self forKeyPath:@"layoutInfo" options:0 context:nil];
-    [_layoutAdapter addObserver:self forKeyPath:@"loconetOverTCPService" options:0 context:nil];
+    return self;
 }
+
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ( object == self.layoutAdapter ) {
         if ( [keyPath isEqualToString:@"trackPower"] ) {
-            [powerSwitch setOn:self.layoutAdapter.trackPower animated:YES];
+            [self.powerSwitch setOn:self.layoutAdapter.trackPower animated:YES];
 
         } else if ( [keyPath isEqualToString:@"layoutInfo"] ) {
             [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
@@ -98,22 +97,26 @@
 }
 
 - (void)dealloc {
-    if ( _layoutAdapter ) {
-        [_layoutAdapter removeObserver:self forKeyPath:@"trackPower"];
-        [_layoutAdapter removeObserver:self forKeyPath:@"layoutInfo"];
-        [_layoutAdapter removeObserver:self forKeyPath:@"loconetOverTCPService"];
-        [_layoutAdapter release];
-    }
-
-    if ( powerSwitch ) {
-        [powerSwitch release];
-    }
+    [_layoutAdapter release];
+    [_powerSwitch release];
 
     [super dealloc];
 }
 
 - (IBAction) powerSwitchChange:(id) sender {
-    self.layoutAdapter.trackPower = [powerSwitch isOn];
+    self.layoutAdapter.trackPower = [self.powerSwitch isOn];
+}
+
+- (void) viewWillAppear:(BOOL) animated {
+    [self.layoutAdapter addObserver:self forKeyPath:@"trackPower" options:0 context:nil];
+    [self.layoutAdapter addObserver:self forKeyPath:@"layoutInfo" options:0 context:nil];
+    [self.layoutAdapter addObserver:self forKeyPath:@"loconetOverTCPService" options:0 context:nil];
+}
+
+- (void) viewWillDisappear:(BOOL)animated {
+    [self.layoutAdapter removeObserver:self forKeyPath:@"trackPower"];
+    [self.layoutAdapter removeObserver:self forKeyPath:@"layoutInfo"];
+    [self.layoutAdapter removeObserver:self forKeyPath:@"loconetOverTCPService"];
 }
 
 #pragma mark Table view methods
@@ -152,14 +155,15 @@
 
     } else if ( indexPath.section == 1 ) {
         if ( indexPath.row == 0 ) {
-            if ( !powerSwitch ) {
-                powerSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [powerSwitch setOn:self.layoutAdapter.trackPower];
-                [powerSwitch addTarget:self action:@selector(powerSwitchChange:) forControlEvents:UIControlEventValueChanged];
+            if ( !self.powerSwitch ) {
+                self.powerSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+                [self.powerSwitch release];
+                [self.powerSwitch setOn:self.layoutAdapter.trackPower];
+                [self.powerSwitch addTarget:self action:@selector(powerSwitchChange:) forControlEvents:UIControlEventValueChanged];
             }
 
-            [cell addSubview:powerSwitch];
-            cell.accessoryView = powerSwitch;
+            [cell addSubview:self.powerSwitch];
+            cell.accessoryView = self.powerSwitch;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             cell.textLabel.text = @"Track Power";

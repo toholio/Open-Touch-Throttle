@@ -16,6 +16,25 @@
 #import "AdapterLoconetOverTCP.h"
 #import "LocoNetOpCodes.h"
 
+@interface AdapterLoconetOverTCP ()
+
+// Add private properties and make others readwrite.
+@property (nonatomic, retain) NSInputStream *istream;
+@property (nonatomic, retain) NSOutputStream *ostream;
+@property (nonatomic, retain) NSMutableString *outwardBuffer;
+@property (nonatomic, retain) NSMutableString *inwardBuffer;
+@property (nonatomic, assign) BOOL canWrite;
+
+@property (nonatomic, assign) BOOL lastObservedTrackState;
+
+// These are changed to read write.
+@property (nonatomic, retain) NSNetService *loconetOverTCPService;
+
+@property (nonatomic, retain) NSString *layoutInfo;
+@property (nonatomic, assign) BOOL fatalError;
+
+@end
+
 @implementation AdapterLoconetOverTCP
 
 @synthesize loconetOverTCPService = _loconetOverTCPService;
@@ -24,16 +43,23 @@
 @synthesize inwardBuffer = _inwardBuffer;
 @synthesize layoutInfo = _layoutInfo;
 @synthesize fatalError = _fatalError;
+@synthesize istream = _istream;
+@synthesize ostream = _ostream;
+@synthesize canWrite = _canWrite;
+@synthesize lastObservedTrackState = _lastObservedTrackState;
 
 - (id)initWithLocoNetOverTCPService:(NSNetService *)service {
     self = [super init];
     if ( self ) {
         self.layoutInfo = @"Unknown layout type.";
-        _lastObservedTrackState = self.trackPower;
+        self.lastObservedTrackState = self.trackPower;
 
         self.inwardBuffer = [[NSMutableString alloc] init];
         self.outwardBuffer = [[NSMutableString alloc] init];
-        _canWrite = NO;
+        [self.inwardBuffer release];
+        [self.outwardBuffer release];
+
+        self.canWrite = NO;
 
         self.loconetOverTCPService = service;
         [self.loconetOverTCPService setDelegate:self];
@@ -44,7 +70,7 @@
 }
 
 - (void)dealloc {
-    [_loconetOverTCPService setDelegate:nil];
+    [self.loconetOverTCPService setDelegate:nil];
     [_loconetOverTCPService release];
 
     if ( _istream ) {
@@ -73,9 +99,29 @@
 
 - (void)netServiceDidResolveAddress:(NSNetService *)netService {
     // Open the socket streams.
-    [self.loconetOverTCPService getInputStream:&_istream outputStream:&_ostream];
+    NSInputStream *inStream;
+    NSOutputStream *outStream;
 
-    if ( !_istream || !_ostream ) {
+    if ( [self.loconetOverTCPService getInputStream:&inStream outputStream:&outStream] ) {
+        self.istream = inStream;
+        self.ostream = outStream;
+
+        [inStream release];
+        [outStream release];
+
+        [self.ostream open];
+        [self.istream open];
+
+        [self.ostream setDelegate:self];
+        [self.istream setDelegate:self];
+
+        [self.ostream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [self.istream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+        // Since we don't yet know the track power state we should request the master config slot, 0.
+        [self sendRequestSlotInfo:0];
+
+    } else {
         UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
                                                              message:@"The LocoNetOverTCP server did not accept the connection."
                                                             delegate:self
@@ -84,18 +130,6 @@
         [errorAlert autorelease];
         [errorAlert show];
 
-    } else {
-        [_ostream open];
-        [_istream open];
-
-        [_ostream setDelegate:self];
-        [_istream setDelegate:self];
-
-        [_ostream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        [_istream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-
-        // Since we don't yet know the track power state we should request the master config slot, 0.
-        [self sendRequestSlotInfo:0];
     }
 }
 
@@ -112,7 +146,7 @@
 #pragma mark Stream methods.
 
 - (void) stream:(NSStream *)theStream handleEvent:(NSStreamEvent) streamEvent {
-    if ( theStream == _istream ) {
+    if ( theStream == self.istream ) {
         switch ( streamEvent ) {
             case NSStreamEventHasBytesAvailable:
                 [self readBytes];
@@ -129,10 +163,10 @@
                 break;
         }
 
-    } else if ( theStream == _ostream ) {
+    } else if ( theStream == self.ostream ) {
         switch ( streamEvent ) {
             case NSStreamEventHasSpaceAvailable:
-                _canWrite = YES;
+                self.canWrite = YES;
                 [self writeBytes];
                 break;
 
@@ -149,14 +183,14 @@
 
     } else {
         NSLog( @"Unknown stream in Loconet service handler." );
-    }    
+    }
 }
 
 - (void) readBytes {
     uint8_t buf[1024];
 
     unsigned int len = 0;
-    len = [_istream read:buf maxLength:1024];
+    len = [self.istream read:buf maxLength:1024];
 
     if ( len ) {
         NSData *tempData = [NSData dataWithBytes:buf length:len];
@@ -235,8 +269,8 @@
 }
 
 - (void) writeBytes {
-    if ( _canWrite && [self.outwardBuffer length] ) {
-        _canWrite = NO;
+    if ( self.canWrite && [self.outwardBuffer length] ) {
+        self.canWrite = NO;
 
         // Make a set of data from the string.
         NSData *buffer = [self.outwardBuffer dataUsingEncoding:NSASCIIStringEncoding];
@@ -392,7 +426,7 @@
     [self.outwardBuffer appendString:command];
     [self.outwardBuffer appendString:@"\n"];
 
-    if ( _canWrite ) {
+    if ( self.canWrite ) {
         [self writeBytes];
     }
 }
@@ -425,7 +459,7 @@
 }
 
 - (void) setObservedTrackPower:(BOOL)powerOn {
-    _lastObservedTrackState = powerOn;
+    self.lastObservedTrackState = powerOn;
     self.trackPower = powerOn;
 }
 

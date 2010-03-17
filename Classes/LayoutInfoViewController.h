@@ -18,13 +18,16 @@
 #import "AdapterLoconetOverTCP.h"
 
 @interface LayoutInfoViewController : UITableViewController {
-    UISwitch *powerSwitch;
+@private
+    UISwitch *_powerSwitch;
 
     AdapterLoconetOverTCP *_layoutAdapter;
 }
 
-@property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
+@property (nonatomic, readonly, retain) AdapterLoconetOverTCP *layoutAdapter;
+@property (nonatomic, retain) UISwitch *powerSwitch;
 
 - (IBAction) powerSwitchChange:(id) sender;
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)adapter;
 
 @end

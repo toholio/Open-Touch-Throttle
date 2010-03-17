@@ -16,12 +16,13 @@
 #import "AdapterLoconetOverTCP.h"
 
 @interface RootViewController : UITableViewController <UINavigationControllerDelegate> {
-  NSMutableArray *_servicesLocoNetArray;
-  NSNetServiceBrowser *_serviceLocoNetBrowser;
-
-  IBOutlet UITableView *layoutTableView;
+@private
+  IBOutlet UITableView *_layoutTableView;
 
   AdapterLoconetOverTCP *_layoutAdapter;
+
+  NSMutableArray *_servicesLocoNetArray;
+  NSNetServiceBrowser *_serviceLocoNetBrowser;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
