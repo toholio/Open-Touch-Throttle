@@ -15,8 +15,11 @@
 		28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD735F0D9D9599002E5188 /* MainWindow.xib */; };
 		28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */; };
 		28F335F11007B36200424DE2 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28F335F01007B36200424DE2 /* RootViewController.xib */; };
-		921AC1F0114CFCF600E16D6F /* AddManualLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 921AC1EF114CFCF600E16D6F /* AddManualLayoutViewController.m */; };
-		921AC1F2114CFD3200E16D6F /* AddManualLayoutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 921AC1F1114CFD3200E16D6F /* AddManualLayoutView.xib */; };
+		920143FE114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 920143FD114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel */; };
+		9201441F114E50CC00FACD8D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9201441E114E50CC00FACD8D /* CoreData.framework */; };
+		92014449114E548900FACD8D /* ManualLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 92014448114E548900FACD8D /* ManualLayout.m */; };
+		925D9AE91150EE57007D8FA1 /* AddManualLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */; };
+		925D9BE81150FE51007D8FA1 /* AddManualLayoutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */; };
 		92E9291E114B6DA800AF4562 /* AdapterLoconetOverTCP.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */; };
 		92E92C58114C7B2300AF4562 /* LayoutInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92E92C57114C7B2300AF4562 /* LayoutInfo.xib */; };
 		92E92C63114C7F1900AF4562 /* LayoutInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92C62114C7F1900AF4562 /* LayoutInfoViewController.m */; };
@@ -36,9 +39,13 @@
 		28F335F01007B36200424DE2 /* RootViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Open_Touch_Throttle-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Open_Touch_Throttle-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		921AC1EE114CFCF600E16D6F /* AddManualLayoutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddManualLayoutViewController.h; sourceTree = "<group>"; };
-		921AC1EF114CFCF600E16D6F /* AddManualLayoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddManualLayoutViewController.m; sourceTree = "<group>"; };
-		921AC1F1114CFD3200E16D6F /* AddManualLayoutView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddManualLayoutView.xib; sourceTree = "<group>"; };
+		920143FD114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Open_Touch_Throttle.xcdatamodel; sourceTree = "<group>"; };
+		9201441E114E50CC00FACD8D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		92014447114E548900FACD8D /* ManualLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ManualLayout.h; path = ../ManualLayout.h; sourceTree = "<group>"; };
+		92014448114E548900FACD8D /* ManualLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ManualLayout.m; path = ../ManualLayout.m; sourceTree = "<group>"; };
+		925D9AE61150EE57007D8FA1 /* AddManualLayoutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddManualLayoutViewController.h; sourceTree = "<group>"; };
+		925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddManualLayoutViewController.m; sourceTree = "<group>"; };
+		925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddManualLayoutView.xib; sourceTree = "<group>"; };
 		92E9291C114B6DA800AF4562 /* AdapterLoconetOverTCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdapterLoconetOverTCP.h; sourceTree = "<group>"; };
 		92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdapterLoconetOverTCP.m; sourceTree = "<group>"; };
 		92E92C0A114C721900AF4562 /* LocoNetOpCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocoNetOpCodes.h; sourceTree = "<group>"; };
@@ -55,6 +62,7 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				2892E4100DC94CBA00A64D0F /* CoreGraphics.framework in Frameworks */,
+				9201441F114E50CC00FACD8D /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +72,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				92014447114E548900FACD8D /* ManualLayout.h */,
+				92014448114E548900FACD8D /* ManualLayout.m */,
 				28C286DF0D94DF7D0034E888 /* RootViewController.h */,
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
 				1D3623240D0F684500981E51 /* Open_Touch_ThrottleAppDelegate.h */,
@@ -72,8 +82,8 @@
 				92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */,
 				92E92C61114C7F1900AF4562 /* LayoutInfoViewController.h */,
 				92E92C62114C7F1900AF4562 /* LayoutInfoViewController.m */,
-				921AC1EE114CFCF600E16D6F /* AddManualLayoutViewController.h */,
-				921AC1EF114CFCF600E16D6F /* AddManualLayoutViewController.m */,
+				925D9AE61150EE57007D8FA1 /* AddManualLayoutViewController.h */,
+				925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -111,11 +121,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */,
 				28F335F01007B36200424DE2 /* RootViewController.xib */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* Open_Touch_Throttle-Info.plist */,
 				92E92C57114C7B2300AF4562 /* LayoutInfo.xib */,
-				921AC1F1114CFD3200E16D6F /* AddManualLayoutView.xib */,
+				920143FD114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -126,6 +137,7 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				2892E40F0DC94CBA00A64D0F /* CoreGraphics.framework */,
+				9201441E114E50CC00FACD8D /* CoreData.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -182,7 +194,7 @@
 				28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */,
 				28F335F11007B36200424DE2 /* RootViewController.xib in Resources */,
 				92E92C58114C7B2300AF4562 /* LayoutInfo.xib in Resources */,
-				921AC1F2114CFD3200E16D6F /* AddManualLayoutView.xib in Resources */,
+				925D9BE81150FE51007D8FA1 /* AddManualLayoutView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,7 +210,9 @@
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
 				92E9291E114B6DA800AF4562 /* AdapterLoconetOverTCP.m in Sources */,
 				92E92C63114C7F1900AF4562 /* LayoutInfoViewController.m in Sources */,
-				921AC1F0114CFCF600E16D6F /* AddManualLayoutViewController.m in Sources */,
+				920143FE114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel in Sources */,
+				92014449114E548900FACD8D /* ManualLayout.m in Sources */,
+				925D9AE91150EE57007D8FA1 /* AddManualLayoutViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

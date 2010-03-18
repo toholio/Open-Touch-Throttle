@@ -15,7 +15,7 @@
 
 #import "AdapterLoconetOverTCP.h"
 
-@interface RootViewController : UITableViewController <UINavigationControllerDelegate> {
+@interface RootViewController : UITableViewController <UINavigationControllerDelegate,NSFetchedResultsControllerDelegate> {
 @private
     IBOutlet UITableView *_layoutTableView;
 
@@ -23,10 +23,16 @@
 
     NSMutableArray *_servicesLocoNetArray;
     NSNetServiceBrowser *_serviceLocoNetBrowser;
+
+    NSFetchedResultsController *_fetchedResultsController;
+    NSManagedObjectContext *_managedObjectContext;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView *layoutTableView;
 @property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
+
+@property (nonatomic, retain) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
 - (void) lookForLocoNetOverTCP;
 

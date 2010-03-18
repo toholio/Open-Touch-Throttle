@@ -16,6 +16,7 @@
 #import "RootViewController.h"
 #import "LayoutInfoViewController.h"
 #import "AddManualLayoutViewController.h"
+#import "ManualLayout.h"
 
 @interface RootViewController ()
 
@@ -32,6 +33,8 @@
 @synthesize servicesLocoNetArray = _servicesLocoNetArray;
 @synthesize serviceLocoNetBrowser = _serviceLocoNetBrowser;
 
+@synthesize fetchedResultsController = _fetchedResultsController;
+@synthesize managedObjectContext = _managedObjectContext;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -45,6 +48,17 @@
     [self.servicesLocoNetArray release];
 
     self.navigationController.delegate = self;
+
+    NSError *error = nil;
+	if (![[self fetchedResultsController] performFetch:&error]) {
+		/*
+		 Replace this implementation with code to handle the error appropriately.
+
+		 abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
+		 */
+		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+		abort();
+	}
 }
 
 - (void)didReceiveMemoryWarning {
@@ -78,6 +92,9 @@
 }
 
 - (void)dealloc {
+    [_fetchedResultsController release];
+	[_managedObjectContext release];
+
     [_servicesLocoNetArray release];
     [_serviceLocoNetBrowser release];
     [_layoutAdapter release];
@@ -130,7 +147,12 @@
 #pragma mark Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:0];
+    if ( [sectionInfo numberOfObjects] > 0 ) {
+        return 2;
+    } else {
+        return 1;
+    }
 }
 
 
@@ -138,6 +160,11 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ( section == 0 ) {
         return [self.servicesLocoNetArray count];
+
+    } else if ( section == 1 ) {
+        id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:0];
+        return [sectionInfo numberOfObjects];
+
     } else {
         return 0;
     }
@@ -156,7 +183,17 @@
 
 	// Configure the cell.
     if ( indexPath.section == 0 ) {
+
         cell.textLabel.text = [[self.servicesLocoNetArray objectAtIndex:indexPath.row] name];
+        cell.detailTextLabel.text = @"";
+
+    } else if ( indexPath.section == 1 ) {
+        NSIndexPath *shiftedIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:0];
+
+        ManualLayout *manualLayout = (ManualLayout *)[self.fetchedResultsController objectAtIndexPath:shiftedIndexPath];
+
+        cell.textLabel.text = manualLayout.Name;
+        cell.detailTextLabel.text = manualLayout.HostName;
     }
 
     return cell;
@@ -197,11 +234,23 @@
     }
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if ( section == 0 ) {
+        return @"Rendezvous";
+    } else if ( section == 1 ) {
+        return @"Manually entered";
+    } else {
+        // Should not happen.
+        return @"";
+    }
+}
+
 #pragma mark -
 #pragma mark Manual layout methods.
 
 - (IBAction) addManualLayout:(id) sender {
-    AddManualLayoutViewController *addManualLayoutViewController = [[AddManualLayoutViewController alloc] initWithNibName:@"AddManualLayoutView" bundle:nil];
+    AddManualLayoutViewController *addManualLayoutViewController = [[AddManualLayoutViewController alloc] initWithNibName:@"AddManualLayoutView" bundle:nil context:[self.fetchedResultsController managedObjectContext]];
+
     UINavigationController *modelNavController = [[UINavigationController alloc] initWithRootViewController:addManualLayoutViewController];
 
     [self.navigationController presentModalViewController:modelNavController animated:YES];
@@ -223,6 +272,46 @@
             [self lookForLocoNetOverTCP];
         }
     }
+}
+
+#pragma mark -
+#pragma mark Fetched results controller
+
+- (NSFetchedResultsController *)fetchedResultsController {
+
+    if ( _fetchedResultsController != nil ) {
+        return _fetchedResultsController;
+    }
+
+	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+
+	NSEntityDescription *entity = [NSEntityDescription entityForName:@"ManualLayout" inManagedObjectContext:self.managedObjectContext];
+	[fetchRequest setEntity:entity];
+
+	[fetchRequest setFetchBatchSize:20];
+
+	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"Name" ascending:NO];
+	NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
+
+	[fetchRequest setSortDescriptors:sortDescriptors];
+
+	NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Root"];
+    aFetchedResultsController.delegate = self;
+	self.fetchedResultsController = aFetchedResultsController;
+
+	[aFetchedResultsController release];
+	[fetchRequest release];
+	[sortDescriptor release];
+	[sortDescriptors release];
+
+	return _fetchedResultsController;
+}
+
+
+// NSFetchedResultsControllerDelegate method to notify the delegate that all section and object changes have been processed.
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+	// In the simplest, most efficient, case, reload the table view.
+	[self.tableView reloadData];
 }
 
 @end

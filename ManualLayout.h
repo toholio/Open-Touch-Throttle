@@ -1,5 +1,7 @@
 //
-//  AddManualLayoutViewController.h
+//  ManualLayout.h
+//  Open-Touch-Throttle
+//
 //  Created by Tobin Richard on 17/03/10.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -11,21 +13,18 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-#import <UIKit/UIKit.h>
-#import "ManualLayout.h"
+#import <CoreData/CoreData.h>
 
-@interface AddManualLayoutViewController : UITableViewController {
-@private
-    NSManagedObjectContext *_context;
 
-    UITextField *_nameField;
-    UITextField *_hostField;
-    UITextField *_portField;
+@interface ManualLayout :  NSManagedObject
+{
 }
 
-- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil context:(NSManagedObjectContext *)theContext;
-
-- (IBAction) save:(id) sender;
-- (IBAction) cancel:(id) sender;
+@property (nonatomic, retain) NSNumber * Port;
+@property (nonatomic, retain) NSString * HostName;
+@property (nonatomic, retain) NSString * Name;
 
 @end
+
+
+
