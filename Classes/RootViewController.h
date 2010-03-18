@@ -45,6 +45,11 @@
           didRemoveService:(NSNetService *)aNetService
                 moreComing:(BOOL) moreComing;
 
+- (void) netServiceDidResolveAddress:(NSNetService *)netService;
+- (void) netService:(NSNetService *)netService didNotResolve:(NSDictionary *)errorDict;
+
 - (IBAction) addManualLayout:(id) sender;
+
+- (void) connectAdapterToLayoutName:(NSString *)name hostName:(NSString *)hostName port:(NSUInteger) port;
 
 @end

@@ -17,8 +17,6 @@
 
 @interface AdapterLoconetOverTCP : NSObject {
 @private
-    NSNetService *_loconetOverTCPService;
-
     NSInputStream *_istream;
     NSOutputStream *_ostream;
     NSMutableString *_inwardBuffer;
@@ -26,6 +24,7 @@
     BOOL _canWrite;
 
     // Layout state.
+    NSString *_name;
     NSString *_layoutInfo;
     BOOL _trackPower;
 
@@ -37,17 +36,12 @@
     BOOL _lastObservedTrackState;
 }
 
-@property (nonatomic, readonly, retain) NSNetService *loconetOverTCPService;
-
 @property (nonatomic, assign) BOOL trackPower;
+@property (nonatomic, readonly, retain) NSString *name;
 @property (nonatomic, readonly, retain) NSString *layoutInfo;
 @property (nonatomic, readonly) BOOL fatalError;
 
-- (id) initWithLocoNetOverTCPService:(NSNetService *)service;
-
-- (void) netServiceDidResolveAddress:(NSNetService *)netService;
-- (void) netService:(NSNetService *)netService didNotResolve:(NSDictionary *)errorDict;
-
+- (void) connectToLayoutName:(NSString *)name hostName:(NSString *)hostName port:(NSUInteger)port;
 - (void) stream:(NSStream *)theStream handleEvent:(NSStreamEvent) streamEvent;
 - (void) readBytes;
 - (void) processBytes;

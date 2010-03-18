@@ -124,7 +124,7 @@
     // Configure the cell.
     if ( indexPath.section == 0 ) {
         if ( indexPath.row == 0 ) {
-            cell.textLabel.text = [self.layoutAdapter.loconetOverTCPService name];
+            cell.textLabel.text = self.layoutAdapter.name;
 
         } else if ( indexPath.row == 1 ) {
             cell.textLabel.text = self.layoutAdapter.layoutInfo;

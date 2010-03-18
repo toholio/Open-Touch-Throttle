@@ -20,6 +20,7 @@
 		92014449114E548900FACD8D /* ManualLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 92014448114E548900FACD8D /* ManualLayout.m */; };
 		925D9AE91150EE57007D8FA1 /* AddManualLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */; };
 		925D9BE81150FE51007D8FA1 /* AddManualLayoutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */; };
+		925D9C92115239B6007D8FA1 /* NSStreamAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 925D9C91115239B6007D8FA1 /* NSStreamAdditions.m */; };
 		92E9291E114B6DA800AF4562 /* AdapterLoconetOverTCP.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */; };
 		92E92C58114C7B2300AF4562 /* LayoutInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92E92C57114C7B2300AF4562 /* LayoutInfo.xib */; };
 		92E92C63114C7F1900AF4562 /* LayoutInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92C62114C7F1900AF4562 /* LayoutInfoViewController.m */; };
@@ -46,6 +47,8 @@
 		925D9AE61150EE57007D8FA1 /* AddManualLayoutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddManualLayoutViewController.h; sourceTree = "<group>"; };
 		925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddManualLayoutViewController.m; sourceTree = "<group>"; };
 		925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddManualLayoutView.xib; sourceTree = "<group>"; };
+		925D9C90115239B6007D8FA1 /* NSStreamAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStreamAdditions.h; sourceTree = "<group>"; };
+		925D9C91115239B6007D8FA1 /* NSStreamAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStreamAdditions.m; sourceTree = "<group>"; };
 		92E9291C114B6DA800AF4562 /* AdapterLoconetOverTCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdapterLoconetOverTCP.h; sourceTree = "<group>"; };
 		92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdapterLoconetOverTCP.m; sourceTree = "<group>"; };
 		92E92C0A114C721900AF4562 /* LocoNetOpCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocoNetOpCodes.h; sourceTree = "<group>"; };
@@ -84,6 +87,8 @@
 				92E92C62114C7F1900AF4562 /* LayoutInfoViewController.m */,
 				925D9AE61150EE57007D8FA1 /* AddManualLayoutViewController.h */,
 				925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */,
+				925D9C90115239B6007D8FA1 /* NSStreamAdditions.h */,
+				925D9C91115239B6007D8FA1 /* NSStreamAdditions.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -213,6 +218,7 @@
 				920143FE114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel in Sources */,
 				92014449114E548900FACD8D /* ManualLayout.m in Sources */,
 				925D9AE91150EE57007D8FA1 /* AddManualLayoutViewController.m in Sources */,
+				925D9C92115239B6007D8FA1 /* NSStreamAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

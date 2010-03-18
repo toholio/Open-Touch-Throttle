@@ -101,6 +101,23 @@
     [super dealloc];
 }
 
+- (void) connectAdapterToLayoutName:(NSString *)name hostName:(NSString *)hostName port:(NSUInteger) port {
+    [self.layoutAdapter connectToLayoutName:name hostName:hostName port:port];
+
+    LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil layoutAdapter:self.layoutAdapter];
+    [self.navigationController pushViewController:layoutInfoViewController animated:YES];
+
+    [self.layoutAdapter addObserver:self forKeyPath:@"fatalError" options:0 context:nil];
+
+    [layoutInfoViewController release];
+
+    // Now stop the service browser while the other view is in use.
+    [self.serviceLocoNetBrowser stop];
+    self.serviceLocoNetBrowser = nil;
+    [self.servicesLocoNetArray removeAllObjects];
+    [self.layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+}
+
 #pragma mark -
 #pragma mark Net Service Browser methods
 
@@ -141,6 +158,25 @@
     if ( !moreComing ) {
         [self.layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     }
+}
+
+#pragma mark -
+#pragma mark Net Service mathods.
+
+- (void)netServiceDidResolveAddress:(NSNetService *)netService {
+    [self connectAdapterToLayoutName:[netService name] hostName:[netService hostName] port:[netService port]];
+}
+
+- (void)netService:(NSNetService *)netService didNotResolve:(NSDictionary *)errorDict {
+    self.layoutAdapter = nil;
+
+    UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
+                                                         message:@"Could not get the connection information from the LocoNetOverTCP server."
+                                                        delegate:self
+                                               cancelButtonTitle:@"Dismiss"
+                                               otherButtonTitles:nil];
+    [errorAlert autorelease];
+    [errorAlert show];
 }
 
 #pragma mark -
@@ -202,26 +238,19 @@
 // Override to support row selection in the table view.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
-    AdapterLoconetOverTCP *adapter;
-
     // Create a layout adapter of the needed type.
+    AdapterLoconetOverTCP *adapter = [[AdapterLoconetOverTCP alloc] init];
+    self.layoutAdapter = adapter;
+    [adapter release];
+
     if ( indexPath.section == 0 ) {
-        adapter = [[AdapterLoconetOverTCP alloc] initWithLocoNetOverTCPService:[self.servicesLocoNetArray objectAtIndex:indexPath.row]];
+        NSNetService *service = [self.servicesLocoNetArray objectAtIndex:indexPath.row];
+        [service setDelegate:self];
+        [service resolveWithTimeout:5.0];
 
-        LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil layoutAdapter:adapter];
-        [self.navigationController pushViewController:layoutInfoViewController animated:YES];
-
-        self.layoutAdapter = adapter;
-        [adapter addObserver:self forKeyPath:@"fatalError" options:0 context:nil];
-
-        [layoutInfoViewController release];
-        [adapter release];
-
-        // Now stop the service browser while the other view is in use.
-        [self.serviceLocoNetBrowser stop];
-        self.serviceLocoNetBrowser = nil;
-        [self.servicesLocoNetArray removeAllObjects];
-        [self.layoutTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+    } else if ( indexPath.section == 1 ) {
+        ManualLayout *manualLayout = [self.fetchedResultsController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
+        [self connectAdapterToLayoutName:manualLayout.Name hostName:manualLayout.HostName port:[manualLayout.Port unsignedIntValue]];
     }
 }
 

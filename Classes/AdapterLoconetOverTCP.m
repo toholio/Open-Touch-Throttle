@@ -15,6 +15,7 @@
 
 #import "AdapterLoconetOverTCP.h"
 #import "LocoNetOpCodes.h"
+#import "NSStreamAdditions.h"
 
 @interface AdapterLoconetOverTCP ()
 
@@ -28,8 +29,7 @@
 @property (nonatomic, assign) BOOL lastObservedTrackState;
 
 // These are changed to read write.
-@property (nonatomic, retain) NSNetService *loconetOverTCPService;
-
+@property (nonatomic, retain) NSString *name;
 @property (nonatomic, retain) NSString *layoutInfo;
 @property (nonatomic, assign) BOOL fatalError;
 
@@ -37,10 +37,10 @@
 
 @implementation AdapterLoconetOverTCP
 
-@synthesize loconetOverTCPService = _loconetOverTCPService;
 @synthesize trackPower = _trackPower;
 @synthesize outwardBuffer = _outwardBuffer;
 @synthesize inwardBuffer = _inwardBuffer;
+@synthesize name = _name;
 @synthesize layoutInfo = _layoutInfo;
 @synthesize fatalError = _fatalError;
 @synthesize istream = _istream;
@@ -48,7 +48,7 @@
 @synthesize canWrite = _canWrite;
 @synthesize lastObservedTrackState = _lastObservedTrackState;
 
-- (id)initWithLocoNetOverTCPService:(NSNetService *)service {
+- (id) init {
     self = [super init];
     if ( self ) {
         self.layoutInfo = @"Unknown layout type.";
@@ -60,19 +60,11 @@
         [self.outwardBuffer release];
 
         self.canWrite = NO;
-
-        self.loconetOverTCPService = service;
-        [self.loconetOverTCPService setDelegate:self];
-
-        [self.loconetOverTCPService resolveWithTimeout:5.0];
     }
     return self;
 }
 
-- (void)dealloc {
-    [self.loconetOverTCPService setDelegate:nil];
-    [_loconetOverTCPService release];
-
+- (void) dealloc {
     if ( _istream ) {
         [_istream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [_istream setDelegate:nil];
@@ -96,56 +88,32 @@
 }
 
 #pragma mark -
-#pragma mark Net Services methods
+#pragma mark Stream methods.
 
-- (void)netServiceDidResolveAddress:(NSNetService *)netService {
+- (void) connectToLayoutName:(NSString *)name hostName:(NSString *)hostName port:(NSUInteger) port {
+    self.name = name;
+
     // Open the socket streams.
     NSInputStream *inStream;
     NSOutputStream *outStream;
 
-    if ( [self.loconetOverTCPService getInputStream:&inStream outputStream:&outStream] ) {
-        self.istream = inStream;
-        self.ostream = outStream;
+    [NSStream getStreamsToHostNamed:hostName port:port inputStream:&inStream outputStream:&outStream];
 
-        [inStream release];
-        [outStream release];
+    self.istream = inStream;
+    self.ostream = outStream;
 
-        [self.ostream open];
-        [self.istream open];
+    [self.ostream setDelegate:self];
+    [self.istream setDelegate:self];
 
-        [self.ostream setDelegate:self];
-        [self.istream setDelegate:self];
+    [self.ostream open];
+    [self.istream open];
 
-        [self.ostream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        [self.istream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.ostream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.istream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 
-        // Since we don't yet know the track power state we should request the master config slot, 0.
-        [self sendRequestSlotInfo:0];
-
-    } else {
-        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                             message:@"The LocoNetOverTCP server did not accept the connection."
-                                                            delegate:self
-                                                   cancelButtonTitle:@"Dismiss"
-                                                   otherButtonTitles:nil];
-        [errorAlert autorelease];
-        [errorAlert show];
-
-    }
+    // Since we don't yet know the track power state we should request the master config slot, 0.
+    [self sendRequestSlotInfo:0];
 }
-
-- (void)netService:(NSNetService *)netService didNotResolve:(NSDictionary *)errorDict {
-    UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
-                                                         message:@"Could not get the connection information from the LocoNetOverTCP server."
-                                                        delegate:self
-                                               cancelButtonTitle:@"Dismiss"
-                                               otherButtonTitles:nil];
-    [errorAlert autorelease];
-    [errorAlert show];
-}
-
-#pragma mark -
-#pragma mark Stream methods.
 
 - (void) stream:(NSStream *)theStream handleEvent:(NSStreamEvent) streamEvent {
     if ( theStream == self.istream ) {
