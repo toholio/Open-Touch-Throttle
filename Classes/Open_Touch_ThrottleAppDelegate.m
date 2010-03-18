@@ -103,18 +103,13 @@
 	NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     if ( ![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error] ) {
-		/*
-		 Replace this implementation with code to handle the error appropriately.
-
-		 abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
-
-		 Typical reasons for an error here include:
-		 * The persistent store is not accessible
-		 * The schema for the persistent store is incompatible with current managed object model
-		 Check the error message to determine what the actual problem was.
-		 */
-		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-		abort();
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Could not load data."
+                                                            message:@"The data used by this application could not be loaded. Please close the application by pressing the home button."
+                                                           delegate:self
+                                                  cancelButtonTitle:@""
+                                                  otherButtonTitles:@"Dismiss", nil];
+        [alertView autorelease];
+        [alertView show];
     }
 
     return _persistentStoreCoordinator;
