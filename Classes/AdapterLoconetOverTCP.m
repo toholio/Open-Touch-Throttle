@@ -129,7 +129,9 @@
             case NSStreamEventEndEncountered:
             case NSStreamEventErrorOccurred:
             default:
-                self.fatalError = YES;
+                if ( !self.fatalError ) {
+                    self.fatalError = YES;
+                }
                 break;
         }
 
@@ -147,7 +149,9 @@
             case NSStreamEventErrorOccurred:
             case NSStreamEventEndEncountered:
             default:
-                self.fatalError = YES;
+                if ( !self.fatalError ) {
+                    self.fatalError = YES;
+                }
                 break;
         }
 
