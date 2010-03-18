@@ -245,6 +245,29 @@
     }
 }
 
+- (void) tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ( editingStyle == UITableViewCellEditingStyleDelete ) {
+        if ( indexPath.section == 1 ) {
+            // Delete the managed object for the given index path
+            NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
+            NSIndexPath *shiftedIndexPath  = [NSIndexPath indexPathForRow:indexPath.row inSection:0];
+            [context deleteObject:[self.fetchedResultsController objectAtIndexPath:shiftedIndexPath]];
+
+            // Save the context.
+            NSError *error = nil;
+            if ( ![context save:&error] ) {
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Could not delete."
+                                                                    message:@"The layout could not be deleted. Please close the application by pressing the home button."
+                                                                   delegate:self
+                                                          cancelButtonTitle:@""
+                                                          otherButtonTitles:@"Dismiss", nil];
+                [alertView autorelease];
+                [alertView show];
+            }
+        }
+	}
+}
+
 #pragma mark -
 #pragma mark Manual layout methods.
 
@@ -311,7 +334,7 @@
 // NSFetchedResultsControllerDelegate method to notify the delegate that all section and object changes have been processed.
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
 	// In the simplest, most efficient, case, reload the table view.
-	[self.tableView reloadData];
+	[self.layoutTableView reloadData];
 }
 
 @end
