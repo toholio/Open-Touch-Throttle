@@ -73,24 +73,6 @@
 	// e.g. self.myOutlet = nil;
 }
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ( object == self.layoutAdapter ) {
-        if ( [keyPath isEqualToString:@"fatalError"] ) {
-            if ( self.layoutAdapter.fatalError ) {
-                [self.navigationController popToRootViewControllerAnimated:YES];
-                UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Lost"
-                                                                     message:@"The connection to the layout has been lost."
-                                                                    delegate:nil
-                                                           cancelButtonTitle:@"Dismiss"
-                                                           otherButtonTitles:nil];
-                [errorAlert show];
-                [errorAlert autorelease];
-            }
-        }
-    }
-}
-
 - (void)dealloc {
     [_fetchedResultsController release];
 	[_managedObjectContext release];
@@ -106,8 +88,6 @@
 
     LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil layoutAdapter:self.layoutAdapter];
     [self.navigationController pushViewController:layoutInfoViewController animated:YES];
-
-    [self.layoutAdapter addObserver:self forKeyPath:@"fatalError" options:0 context:nil];
 
     [layoutInfoViewController release];
 
@@ -317,11 +297,16 @@
     if ( navigationController == self.navigationController ) {
         if ( viewController == self ) {
             // The layout adapter is no longer needed.
-            [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
             self.layoutAdapter = nil;
 
             // We must have returned from the layout views. Start looking for layouts again.
             [self lookForLocoNetOverTCP];
+
+            // Ensure there is no lingering selection.
+            NSIndexPath *indexPath = [self.layoutTableView indexPathForSelectedRow];
+            if ( indexPath ) {
+                [self.layoutTableView deselectRowAtIndexPath:indexPath animated:YES];
+            }
         }
     }
 }
