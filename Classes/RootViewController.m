@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 #import "RootViewController.h"
-#import "LayoutInfoViewController.h"
+#import "LayoutTabViewController.h"
 #import "AddManualLayoutViewController.h"
 #import "ManualLayout.h"
 
@@ -86,10 +86,9 @@
 - (void) connectAdapterToLayoutName:(NSString *)name hostName:(NSString *)hostName port:(NSUInteger) port {
     [self.layoutAdapter connectToLayoutName:name hostName:hostName port:port];
 
-    LayoutInfoViewController *layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil layoutAdapter:self.layoutAdapter];
-    [self.navigationController pushViewController:layoutInfoViewController animated:YES];
-
-    [layoutInfoViewController release];
+    LayoutTabViewController *layoutTabViewController = [[LayoutTabViewController alloc] initWithNibName:@"LayoutTabView" bundle:nil layoutAdapter:self.layoutAdapter];
+    [self.navigationController pushViewController:layoutTabViewController animated:YES];
+    [layoutTabViewController release];
 
     // Now stop the service browser while the other view is in use.
     [self.serviceLocoNetBrowser stop];

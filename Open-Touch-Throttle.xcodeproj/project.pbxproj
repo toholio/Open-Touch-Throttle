@@ -21,8 +21,10 @@
 		925D9AE91150EE57007D8FA1 /* AddManualLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */; };
 		925D9BE81150FE51007D8FA1 /* AddManualLayoutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */; };
 		925D9C92115239B6007D8FA1 /* NSStreamAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 925D9C91115239B6007D8FA1 /* NSStreamAdditions.m */; };
+		925DA00E115428A2007D8FA1 /* LayoutTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 925DA00C115428A2007D8FA1 /* LayoutTabViewController.m */; };
+		925DA1FC115446E2007D8FA1 /* LayoutInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 925DA1FB115446E2007D8FA1 /* LayoutInfo.xib */; };
+		925DA1FE11544707007D8FA1 /* LayoutTabView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 925DA1FD11544707007D8FA1 /* LayoutTabView.xib */; };
 		92E9291E114B6DA800AF4562 /* AdapterLoconetOverTCP.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */; };
-		92E92C58114C7B2300AF4562 /* LayoutInfo.xib in Resources */ = {isa = PBXBuildFile; fileRef = 92E92C57114C7B2300AF4562 /* LayoutInfo.xib */; };
 		92E92C63114C7F1900AF4562 /* LayoutInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E92C62114C7F1900AF4562 /* LayoutInfoViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -49,10 +51,13 @@
 		925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddManualLayoutView.xib; sourceTree = "<group>"; };
 		925D9C90115239B6007D8FA1 /* NSStreamAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStreamAdditions.h; sourceTree = "<group>"; };
 		925D9C91115239B6007D8FA1 /* NSStreamAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStreamAdditions.m; sourceTree = "<group>"; };
+		925DA00B115428A2007D8FA1 /* LayoutTabViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutTabViewController.h; sourceTree = "<group>"; };
+		925DA00C115428A2007D8FA1 /* LayoutTabViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutTabViewController.m; sourceTree = "<group>"; };
+		925DA1FB115446E2007D8FA1 /* LayoutInfo.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LayoutInfo.xib; sourceTree = "<group>"; };
+		925DA1FD11544707007D8FA1 /* LayoutTabView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LayoutTabView.xib; sourceTree = "<group>"; };
 		92E9291C114B6DA800AF4562 /* AdapterLoconetOverTCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdapterLoconetOverTCP.h; sourceTree = "<group>"; };
 		92E9291D114B6DA800AF4562 /* AdapterLoconetOverTCP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdapterLoconetOverTCP.m; sourceTree = "<group>"; };
 		92E92C0A114C721900AF4562 /* LocoNetOpCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocoNetOpCodes.h; sourceTree = "<group>"; };
-		92E92C57114C7B2300AF4562 /* LayoutInfo.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LayoutInfo.xib; sourceTree = "<group>"; };
 		92E92C61114C7F1900AF4562 /* LayoutInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutInfoViewController.h; sourceTree = "<group>"; };
 		92E92C62114C7F1900AF4562 /* LayoutInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutInfoViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -89,6 +94,8 @@
 				925D9AE71150EE57007D8FA1 /* AddManualLayoutViewController.m */,
 				925D9C90115239B6007D8FA1 /* NSStreamAdditions.h */,
 				925D9C91115239B6007D8FA1 /* NSStreamAdditions.m */,
+				925DA00B115428A2007D8FA1 /* LayoutTabViewController.h */,
+				925DA00C115428A2007D8FA1 /* LayoutTabViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -126,11 +133,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				925DA1FD11544707007D8FA1 /* LayoutTabView.xib */,
+				925DA1FB115446E2007D8FA1 /* LayoutInfo.xib */,
 				925D9BE71150FE51007D8FA1 /* AddManualLayoutView.xib */,
 				28F335F01007B36200424DE2 /* RootViewController.xib */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* Open_Touch_Throttle-Info.plist */,
-				92E92C57114C7B2300AF4562 /* LayoutInfo.xib */,
 				920143FD114E31BC00FACD8D /* Open_Touch_Throttle.xcdatamodel */,
 			);
 			name = Resources;
@@ -198,8 +206,9 @@
 			files = (
 				28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */,
 				28F335F11007B36200424DE2 /* RootViewController.xib in Resources */,
-				92E92C58114C7B2300AF4562 /* LayoutInfo.xib in Resources */,
 				925D9BE81150FE51007D8FA1 /* AddManualLayoutView.xib in Resources */,
+				925DA1FC115446E2007D8FA1 /* LayoutInfo.xib in Resources */,
+				925DA1FE11544707007D8FA1 /* LayoutTabView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,6 +228,7 @@
 				92014449114E548900FACD8D /* ManualLayout.m in Sources */,
 				925D9AE91150EE57007D8FA1 /* AddManualLayoutViewController.m in Sources */,
 				925D9C92115239B6007D8FA1 /* NSStreamAdditions.m in Sources */,
+				925DA00E115428A2007D8FA1 /* LayoutTabViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

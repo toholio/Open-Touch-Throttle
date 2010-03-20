@@ -29,7 +29,5 @@
 
 - (IBAction) powerSwitchChange:(id) sender;
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)adapter;
-- (void) handleFatalErrorWithInitialConnection:(BOOL) initialConnection;
-
 
 @end

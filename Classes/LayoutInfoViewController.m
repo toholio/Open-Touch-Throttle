@@ -37,7 +37,6 @@
     return self;
 }
 
-
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ( object == self.layoutAdapter ) {
@@ -50,8 +49,6 @@
         } else if ( [keyPath isEqualToString:@"loconetOverTCPService"] ) {
             [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
 
-        } else if ( [keyPath isEqualToString:@"fatalError"] ) {
-            [self handleFatalErrorWithInitialConnection:NO];
         }
     }
 }
@@ -86,16 +83,6 @@
     self.layoutAdapter.trackPower = [self.powerSwitch isOn];
 }
 
-- (void) viewDidAppear:(BOOL)animated {
-    // Start watching for fatal errors.
-    [self.layoutAdapter addObserver:self forKeyPath:@"fatalError" options:0 context:nil];
-
-    // Check if one has already happened.
-    if ( self.layoutAdapter.fatalError ) {
-        [self handleFatalErrorWithInitialConnection:YES];
-    }
-}
-
 - (void) viewWillAppear:(BOOL) animated {
     [self.layoutAdapter addObserver:self forKeyPath:@"trackPower" options:0 context:nil];
     [self.layoutAdapter addObserver:self forKeyPath:@"layoutInfo" options:0 context:nil];
@@ -103,11 +90,14 @@
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
-    [self.layoutAdapter removeObserver:self forKeyPath:@"fatalError"];
-
     [self.layoutAdapter removeObserver:self forKeyPath:@"trackPower"];
     [self.layoutAdapter removeObserver:self forKeyPath:@"layoutInfo"];
     [self.layoutAdapter removeObserver:self forKeyPath:@"loconetOverTCPService"];
+}
+
+- (void) viewDidAppear:(BOOL)animated {
+    // Make sure the power switch is always accurate at first appearance.
+    [self.powerSwitch setOn:self.layoutAdapter.trackPower];
 }
 
 #pragma mark -
@@ -163,25 +153,6 @@
     }
 
     return cell;
-}
-
-#pragma mark -
-#pragma mark Special layout adapter handling
-
-- (void) handleFatalErrorWithInitialConnection:(BOOL) initialConnection {
-    UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Connection Error" message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:@"Dismiss", nil];
-
-    if ( initialConnection ) {
-        errorAlert.message = @"A connection could not be established with the server.";
-
-    } else {
-        errorAlert.message = @"The connection to the server was lost.";
-    }
-
-    [errorAlert show];
-    [errorAlert autorelease];
-
-    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end
