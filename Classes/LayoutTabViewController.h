@@ -16,6 +16,7 @@
 #import <UIKit/UIKit.h>
 #import "AdapterLoconetOverTCP.h"
 #import "LayoutInfoViewController.h"
+#import "LayoutThrottleViewController.h"
 
 @interface LayoutTabViewController : UIViewController <UITabBarDelegate> {
 @private
@@ -23,14 +24,18 @@
     UIViewController *_selectedViewController;
     AdapterLoconetOverTCP *_layoutAdapter;
     LayoutInfoViewController *_layoutInfoViewController;
+    LayoutThrottleViewController *_layoutThrottleViewController;
     UITabBarItem *_layoutInfoViewTabBarItem;
+    UITabBarItem *_layoutThrottleViewTabBarItem;
 }
 
 @property (nonatomic, retain) IBOutlet UITabBar *tabBar;
 @property (nonatomic, retain) UIViewController *selectedViewController;
 @property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
 @property (nonatomic, retain) LayoutInfoViewController *layoutInfoViewController;
+@property (nonatomic, retain) LayoutThrottleViewController *layoutThrottleViewController;
 @property (nonatomic, retain) UITabBarItem *layoutInfoViewTabBarItem;
+@property (nonatomic, retain) UITabBarItem *layoutThrottleViewTabBarItem;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)theLayoutAdapter;
 - (void) handleFatalErrorWithInitialConnection:(BOOL) initialConnection;

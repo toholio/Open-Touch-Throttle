@@ -21,7 +21,9 @@
 @synthesize selectedViewController = _selectedViewController;
 @synthesize layoutAdapter = _layoutAdapter;
 @synthesize layoutInfoViewController = _layoutInfoViewController;
+@synthesize layoutThrottleViewController = _layoutThrottleViewController;
 @synthesize layoutInfoViewTabBarItem = _layoutInfoViewTabBarItem;
+@synthesize layoutThrottleViewTabBarItem = _layoutThrottleViewTabBarItem;
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)theLayoutAdapter {
@@ -30,11 +32,19 @@
         self.layoutAdapter = theLayoutAdapter;
         self.title = self.layoutAdapter.name;
 
+        // Info view.
         self.layoutInfoViewController = [[LayoutInfoViewController alloc] initWithNibName:@"LayoutInfo" bundle:nil layoutAdapter:self.layoutAdapter];
         [self.layoutInfoViewController release];
 
         self.layoutInfoViewTabBarItem = [[UITabBarItem alloc] initWithTitle:@"Info" image:nil tag:0];
         [self.layoutInfoViewTabBarItem release];
+
+        // Throttle view.
+        self.layoutThrottleViewController = [[LayoutThrottleViewController alloc] initWithNibName:@"LayoutThrottleView" bundle:nil layoutAdapter:self.layoutAdapter];
+        [self.layoutThrottleViewController release];
+
+        self.layoutThrottleViewTabBarItem = [[UITabBarItem alloc] initWithTitle:@"Throttle" image:nil tag:0];
+        [self.layoutThrottleViewTabBarItem release];
     }
     return self;
 }
@@ -43,7 +53,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self.tabBar setItems:[[[NSArray alloc] initWithObjects:self.layoutInfoViewTabBarItem, nil] autorelease] animated:NO];
+    [self.tabBar setItems:[[[NSArray alloc] initWithObjects:self.layoutInfoViewTabBarItem, self.layoutThrottleViewTabBarItem, nil] autorelease] animated:NO];
     self.tabBar.selectedItem = self.layoutInfoViewTabBarItem;
 
     // The first time around we need to make sure the selection handler ran as expected.
@@ -95,6 +105,8 @@
     [_selectedViewController release];
     [_tabBar release];
     [_layoutInfoViewTabBarItem release];
+    [_layoutThrottleViewTabBarItem release];
+    [_layoutThrottleViewController release];
 
     [_layoutAdapter release];
 
@@ -107,6 +119,9 @@
 
     if ( item == self.layoutInfoViewTabBarItem ) {
         nextViewController = self.layoutInfoViewController;
+
+    } else if ( item == self.layoutThrottleViewTabBarItem) {
+        nextViewController = self.layoutThrottleViewController;
     }
 
     // Make sure the user has selected a valid and different item.
