@@ -98,6 +98,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated {
     [self.selectedViewController viewDidDisappear:animated];
+    [self.layoutAdapter cleanUp];
 }
 
 - (void)dealloc {

@@ -18,11 +18,16 @@
 @implementation LayoutThrottleViewController
 
 @synthesize layoutAdapter = _layoutAdapter;
+@synthesize layoutThrottle = _layoutThrottle;
+@synthesize speedSlider = _speedSlider;
+@synthesize directionControl = _directionControl;
 
 // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)theLayoutAdapter {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         self.layoutAdapter = theLayoutAdapter;
+
+        self.layoutThrottle = [self.layoutAdapter createThrottle];
     }
     return self;
 }
@@ -34,15 +39,47 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)dealloc {
     [_layoutAdapter release];
 
     [super dealloc];
+}
+
+- (IBAction) didChangeSpeed:(id) sender {
+    self.layoutThrottle.locoSpeed = self.speedSlider.value;
+}
+
+- (IBAction) didChangeDirection:(id) sender {
+    self.layoutThrottle.locoForward = self.directionControl.selectedSegmentIndex;
+}
+
+- (void) viewWillAppear:(BOOL) animated {
+    [self.layoutThrottle addObserver:self forKeyPath:@"locoSpeed" options:0 context:nil];
+    [self.layoutThrottle addObserver:self forKeyPath:@"locoDirection" options:0 context:nil];
+}
+
+- (void) viewWillDisappear:(BOOL)animated {
+    [self.layoutThrottle removeObserver:self forKeyPath:@"locoSpeed"];
+    [self.layoutThrottle removeObserver:self forKeyPath:@"locoDirection"];
+}
+
+- (void) viewDidAppear:(BOOL)animated {
+    // Make sure the power switch is always accurate at first appearance.
+    self.directionControl.selectedSegmentIndex = self.layoutThrottle.locoForward ? 1 : 0;
+    [self.speedSlider setValue:self.layoutThrottle.locoSpeed animated:YES];
+
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if ( object == self.layoutThrottle ) {
+        if ( keyPath == @"locoSpeed" ) {
+            [self.speedSlider setValue:self.layoutThrottle.locoSpeed animated:YES];
+
+        } else if ( keyPath == @"locoForward" ) {
+            self.directionControl.selectedSegmentIndex = self.layoutThrottle.locoForward ? 1 : 0;
+
+        }
+    }
 }
 
 @end

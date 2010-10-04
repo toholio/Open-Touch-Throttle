@@ -13,7 +13,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+#define ADR_LO(X) (X & 0x7f)
+#define ADR_HI(X) ((X & 0x7f00) >> 8 )
+
 #import "AdapterLoconetOverTCP.h"
+#import "AdapterThrottleLoconetOverTCP.h"
 #import "LocoNetOpCodes.h"
 #import "NSStreamAdditions.h"
 
@@ -85,6 +89,12 @@
     [_layoutInfo release];
 
     [super dealloc];
+}
+
+- (void) cleanUp {
+    for ( AdapterThrottleLoconetOverTCP *throttle in self.throttles ) {
+        throttle.locoAddress = LOCO_ADDRESS_INVALID;
+    }
 }
 
 #pragma mark -
@@ -386,6 +396,16 @@
             case OPC_SL_RD_DATA:
                 // We can examine the 5th data byte for track status. For now we only care about track power.
                 self.lastObservedTrackState = bytes[7] & 0x01;
+
+                // We should also see if the address concerns any of the throttles.
+                NSUInteger address = 0;
+                address |= bytes[4];
+                address |= bytes[9] << 7;
+                for ( AdapterThrottleLoconetOverTCP *throttle in self.throttles ) {
+                    if ( address == throttle.locoAddress ) {
+                        [throttle processSlotRead:theBytes];
+                    }
+                }
                 break;
 
             default:
@@ -414,12 +434,94 @@
     }
 }
 
+- (void) sendRequestAddressInfo:(NSUInteger) address {
+    uint8_t bytes[4];
+
+    bytes[0] = OPC_LOCO_ADR;
+    bytes[1] = ADR_HI( address );
+    bytes[2] = ADR_LO( address );
+    bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
+
+    [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
+}
+
 - (void) sendRequestSlotInfo:(unsigned short) slot {
     uint8_t bytes[4];
 
     bytes[0] = OPC_RQ_SL_DATA;
     bytes[1] = slot & 0x7f;
     bytes[2] = 0;
+    bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
+
+    [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
+}
+
+- (void) sendSlotMove:(unsigned short) from to:(unsigned short) to {
+    uint8_t bytes[4];
+
+    bytes[0] = OPC_MOVE_SLOTS;
+    bytes[1] = from & 0x7f;
+    bytes[2] = to & 0x7f;
+    bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
+
+    [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
+}
+
+- (void) sendSlot:(unsigned short) slot speed:(double) speed {
+    uint8_t dccSpeed = speed * 127;
+
+    uint8_t bytes[4];
+
+    bytes[0] = OPC_LOCO_SPD;
+    bytes[1] = slot & 0x7f;
+    bytes[2] = dccSpeed & 0x7f;
+    bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
+
+    [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
+}
+
+- (void) sendSlot:(unsigned short) slot status:(unsigned short) status {
+    uint8_t bytes[4];
+
+    bytes[0] = OPC_SLOT_STAT1;
+    bytes[1] = slot & 0x7f;
+    bytes[2] = status & 0x7f;
+    bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
+
+    [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
+}
+
+- (void) sendSlot:(unsigned short) slot forward:(BOOL)forward function0:(BOOL) f0 function1:(BOOL) f1 function2:(BOOL) f2 function3:(BOOL) f3 function4:(BOOL) f4 {
+    uint8_t bytes[4];
+
+    bytes[0] = OPC_LOCO_DIRF;
+    bytes[1] = slot & 0x7f;
+    bytes[2] = 0;
+
+    if ( !forward ) {
+        bytes[2] |= 0x20;
+    }
+
+    if ( f0 ) {
+        bytes[2] |= 0x10;
+    }
+
+    if ( f1) {
+        bytes[2] |= 0x08;
+    }
+
+    if ( f2 ) {
+        bytes[2] |= 0x04;
+    }
+
+    if ( f3 ) {
+        bytes[2] |= 0x02;
+    }
+
+    if ( f4 ) {
+        bytes[2] |= 0x01;
+    }
+
     bytes[3] = bytes[0] ^ bytes[1] ^ bytes [2] ^ 0xff;
 
     [self sendLocoNet:[NSString stringWithFormat:@"SEND %02X %02X %02X %02X", bytes[0], bytes[1], bytes[2], bytes[3]]];
@@ -436,6 +538,27 @@
 - (void) setLastObservedTrackState:(BOOL)powerOn {
     _lastObservedTrackState = powerOn;
     self.trackPower = powerOn;
+}
+
+#pragma mark -
+#pragma mark Throttle helpers.
+
+- (id) throttles {
+    if ( _throttles == nil ) {
+        _throttles = [[NSMutableArray alloc] init];
+    }
+
+    return _throttles;
+}
+
+- (id) createThrottle {
+    AdapterThrottleLoconetOverTCP *throttle = [[AdapterThrottleLoconetOverTCP alloc] initWithLayoutAdapter:self];
+
+    [self.throttles addObject:throttle];
+
+    [throttle release];
+
+    return throttle;
 }
 
 @end

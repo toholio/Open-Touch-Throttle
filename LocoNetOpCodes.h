@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 
-// Two byte opcodes. 
+// Two byte opcodes.
 #define OPC_IDLE         0x85
 #define OPC_GPON         0x83
 #define OPC_GPOFF        0x82
@@ -46,3 +46,9 @@
 #define OPC_SL_RD_DATA   0xe7
 #define OPC_PEER_XFER    0xe5
 #define OPC_IMM_PACKET   0xed
+
+// Slot status.
+#define SL_IN_USE 0x3
+#define SL_IDLE   0x2
+#define SL_COMMON 0x1
+#define SL_FREE   0x0

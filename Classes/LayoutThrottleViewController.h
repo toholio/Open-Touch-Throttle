@@ -15,14 +15,23 @@
 
 #import <UIKit/UIKit.h>
 #import "AdapterLoconetOverTCP.h"
+#import "AdapterThrottleLoconetOverTCP.h"
 
 @interface LayoutThrottleViewController : UIViewController {
 @private
     AdapterLoconetOverTCP *_layoutAdapter;
+    AdapterThrottleLoconetOverTCP *_layoutThrottle;
+    UISlider *_speedSlider;
+    UISegmentedControl *_directionControl;
 }
 
 @property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
+@property (nonatomic, retain) AdapterThrottleLoconetOverTCP *layoutThrottle;
+@property (nonatomic, retain) IBOutlet UISlider *speedSlider;
+@property (nonatomic, retain) IBOutlet UISegmentedControl *directionControl;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil layoutAdapter:(AdapterLoconetOverTCP *)theLayoutAdapter;
+- (IBAction) didChangeSpeed:(id) sender;
+- (IBAction) didChangeDirection:(id) sender;
 
 @end
