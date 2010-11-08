@@ -17,10 +17,21 @@
 #import "AdapterLoconetOverTCP.h"
 #import "LocoNetOpCodes.h"
 
+@interface AdapterThrottleLoconetOverTCP ()
+
+// These are changed to read write.
+@property (nonatomic, assign) BOOL error;
+@property (nonatomic, retain) NSString *errorMessage;
+
+@end
+
+
 @implementation AdapterThrottleLoconetOverTCP
 
 @synthesize layoutAdapter = _layoutAdapter;
 @synthesize locoAddress = _locoAddress;
+@synthesize error = _error;
+@synthesize errorMessage = _errorMessage;
 
 - (id) initWithLayoutAdapter:(AdapterLoconetOverTCP *)theLayoutAdapter {
     self = [super init];
@@ -44,6 +55,7 @@
 
     if ( _locoAddress != LOCO_ADDRESS_INVALID ) {
         // Start looking for the new address.
+        _lookingForSlot = YES;
         [self.layoutAdapter sendRequestAddressInfo:theLocoAddress];
     }
 }
@@ -56,10 +68,20 @@
 
     // Check the slot status, if it's available we will use it.
     unsigned int status = (bytes[3] & 0x30) >> 4;
-    if ( status == SL_IDLE || status == SL_COMMON || status == SL_FREE ) {
+    if ( _lookingForSlot && ( status == SL_IDLE || status == SL_COMMON || status == SL_FREE ) ) {
         // Do a null move.
+        _lookingForSlot = NO;
         _shouldGainSlot = YES;
         [self.layoutAdapter sendSlotMove:bytes[2] to:bytes[2]];
+
+    } else if ( _lookingForSlot && status == SL_IN_USE ) {
+        _lookingForSlot = NO;
+        _shouldGainSlot = NO;
+
+        // Notify the user that the slot is in use.
+        self.error = YES;
+        self.errorMessage = [NSString stringWithFormat:@"The locomotive with address %d is in use by another throttle.", self.locoAddress];
+        self.locoAddress = LOCO_ADDRESS_INVALID;
 
     } else if ( _shouldGainSlot ) {
         _shouldGainSlot = NO;

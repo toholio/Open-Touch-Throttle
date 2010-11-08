@@ -23,7 +23,10 @@
     AdapterLoconetOverTCP *_layoutAdapter;
     NSUInteger _locoAddress;
     BOOL _shouldGainSlot;
+    BOOL _lookingForSlot;
     uint8_t _slotData[11];
+    BOOL _error;
+    NSString *_errorMessage;
 }
 
 @property (nonatomic, retain) AdapterLoconetOverTCP *layoutAdapter;
@@ -31,6 +34,8 @@
 @property (nonatomic, assign) float locoSpeed;
 @property (nonatomic, assign) BOOL locoForward;
 @property (nonatomic, readonly) uint8_t locoSlot;
+@property (nonatomic, readonly) BOOL error;
+@property (nonatomic, readonly, retain) NSString *errorMessage;
 
 - (id) initWithLayoutAdapter:(AdapterLoconetOverTCP *)theLayoutAdapter;
 - (void) processSlotRead:(NSData *)theBytes;
