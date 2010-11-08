@@ -55,7 +55,7 @@
 
 - (void) viewWillAppear:(BOOL) animated {
     [self.layoutThrottle addObserver:self forKeyPath:@"locoSpeed" options:0 context:nil];
-    [self.layoutThrottle addObserver:self forKeyPath:@"locoDirection" options:0 context:nil];
+    [self.layoutThrottle addObserver:self forKeyPath:@"locoForward" options:0 context:nil];
     [self.layoutThrottle addObserver:self forKeyPath:@"error" options:0 context:nil];
 
     if (self.layoutThrottle.error) {
@@ -65,14 +65,14 @@
 
 - (void) viewWillDisappear:(BOOL)animated {
     [self.layoutThrottle removeObserver:self forKeyPath:@"locoSpeed"];
-    [self.layoutThrottle removeObserver:self forKeyPath:@"locoDirection"];
+    [self.layoutThrottle removeObserver:self forKeyPath:@"locoForward"];
     [self.layoutThrottle removeObserver:self forKeyPath:@"error"];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
     // Make sure the power switch is always accurate at first appearance.
-    self.directionControl.selectedSegmentIndex = self.layoutThrottle.locoForward ? 1 : 0;
-    [self.speedSlider setValue:self.layoutThrottle.locoSpeed animated:YES];
+    self.directionControl.selectedSegmentIndex = self.layoutThrottle.locoForward ? 0 : 1;
+    [self.speedSlider setValue:self.layoutThrottle.locoSpeed animated:NO];
 
 }
 
