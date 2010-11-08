@@ -34,4 +34,6 @@
 - (IBAction) didChangeSpeed:(id) sender;
 - (IBAction) didChangeDirection:(id) sender;
 
+- (void) reportError;
+
 @end

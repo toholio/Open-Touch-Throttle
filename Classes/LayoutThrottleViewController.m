@@ -56,11 +56,17 @@
 - (void) viewWillAppear:(BOOL) animated {
     [self.layoutThrottle addObserver:self forKeyPath:@"locoSpeed" options:0 context:nil];
     [self.layoutThrottle addObserver:self forKeyPath:@"locoDirection" options:0 context:nil];
+    [self.layoutThrottle addObserver:self forKeyPath:@"error" options:0 context:nil];
+
+    if (self.layoutThrottle.error) {
+        [self reportError];
+    }
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
     [self.layoutThrottle removeObserver:self forKeyPath:@"locoSpeed"];
     [self.layoutThrottle removeObserver:self forKeyPath:@"locoDirection"];
+    [self.layoutThrottle removeObserver:self forKeyPath:@"error"];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
@@ -78,8 +84,15 @@
         } else if ( keyPath == @"locoForward" ) {
             self.directionControl.selectedSegmentIndex = self.layoutThrottle.locoForward ? 1 : 0;
 
+        } else if ( keyPath == @"error" ) {
+            [self reportError];
         }
     }
+}
+
+- (void) reportError {
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Throttle error." message:self.layoutThrottle.errorMessage delegate:nil cancelButtonTitle:@"Dismiss." otherButtonTitles:nil] autorelease];
+    [alert show];
 }
 
 @end
